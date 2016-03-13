@@ -1,6 +1,3 @@
-a<-1
-
-
 #' Download a list of instrumentr from Yahoo
 #'
 #' Download a list of instruments from Yahoo into the specified path which is kept as CSV files
@@ -15,13 +12,15 @@ a<-1
 #' @export
 #'
 #' @examples
-#' a<-1
-downloadInstruments<-function(instruments, path, startDate){
+#' \dontrun{downloadInstruments(c('ABB.ST'), '/home/michael/Dropbox/Development/trading')}
+downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
+  if(!dir.exists(paths = path)) dir.create(path = path, recursive = T)
   for (i in instruments){
     print(i)
     tmpdf<-getSymbols(Symbols = i, src = "yahoo", from = startDate, auto.assign = FALSE)
     colnames(tmpdf)<- c("open","high","low","close","volume","adj.")
-    write.zoo(tmpdf, paste(path,i,".csv",sep=""),sep=",",row.names=FALSE)
+    # print(paste(path,"/", i,".csv",sep=""))
+    write.zoo(tmpdf, paste(path,"/", i,".csv",sep=""), sep=",",row.names=FALSE)
   }
 }
 
@@ -36,17 +35,19 @@ downloadInstruments<-function(instruments, path, startDate){
 #'
 #' @importFrom xts xts
 #' @importFrom zoo write.zoo
+#' @importFrom zoo index
 #' @return Nothing
 #' @export
 #'
 #' @examples
+#' a<-1
 updateInstruments<-function(path, startDate=Sys.Date()-60){
   theFiles <- list.files(path=path, pattern=".csv")
   for (i in theFiles){
-    data <- read.csv(paste(path,i,sep=""))
+    data <- read.csv(paste(path,"/",i,sep=""))
     data <- xts(data[,c("open","high","low","close","volume","adj.")],
                order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
-    lastHistoricalDate<- index(data[nrow(data),])
+    lastHistoricalDate <- index(data[nrow(data),])
 
     recent <- getSymbols(Symbols = substr(i,1,nchar(i)-4), src = "yahoo", from = startDate, auto.assign = FALSE)
     colnames(recent) <- c("open","high","low","close","volume","adj.")
@@ -55,9 +56,9 @@ updateInstruments<-function(path, startDate=Sys.Date()-60){
     if (!is.na(pos)){
       if (pos == nrow(recent)) print("File already up-to-date")
       if (pos < nrow(recent)){
-        dt<- NULL
-        dt<- rbind(data,recent[(pos+1):nrow(recent),])
-        write.zoo(dt,paste(path,i,sep=""),sep=",",row.names=FALSE)
+        dt <- NULL
+        dt <- rbind(data,recent[(pos+1):nrow(recent),])
+        write.zoo(dt, paste(path, "/", i, sep=""), sep=",", row.names=FALSE)
       }
     }
     if (is.na(pos)) print("Error: dates do not match")
