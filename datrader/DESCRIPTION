@@ -4,6 +4,9 @@ Title: Allow People To Do Intelligence Trading
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: Dr. Michael Green <micke.green@gmail.com>
-Description: This package is a collection of useful routines to select, evaluate and execute trading strategies.
+Description: This package is a collection of useful routines to select, evaluate
+    and execute trading strategies.
 License: MIT
 LazyData: TRUE
+RoxygenNote: 5.0.1
+Depends: xts, zoo, quantmod
