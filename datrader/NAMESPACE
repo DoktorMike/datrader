@@ -2,6 +2,7 @@
 
 export(downloadInstruments)
 export(updateInstruments)
+importFrom(dplyr,progress_estimated)
 importFrom(quantmod,getSymbols)
 importFrom(xts,xts)
 importFrom(zoo,index)

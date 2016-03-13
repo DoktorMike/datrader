@@ -8,19 +8,28 @@
 #' @param startDate the starting date to start the query from
 #' @importFrom quantmod getSymbols
 #' @importFrom zoo write.zoo
+#' @importFrom dplyr progress_estimated
 #' @return TRUE if we successfully downloaded all instruments. FALSE otherwise
 #' @export
 #'
 #' @examples
-#' \dontrun{downloadInstruments(c('ABB.ST'), '/home/michael/Dropbox/Development/trading')}
+#' omxs30Symbols<-c('ABB.ST', 'ALFA.ST', 'ASSA-B.ST', 'AZN.ST', 'ATCO-A.ST',
+#' 'ATCO-B.ST', 'BOL.ST', 'ELUX-B.ST', 'ERIC-B.ST', 'GETI-B.ST', 'HMB.ST',
+#' 'INVE-B.ST', 'LUPE.ST', 'MTG-B.ST', 'NDA-SEK.ST', 'SAND.ST',
+#' 'SCA-B.ST', 'SCV-B.ST', 'SEB-A.ST', 'SECU-B.ST', 'SKA-B.ST', 'SKF-B.ST',
+#' 'SSAB-A.ST', 'SHB-A.ST', 'SWED-A.ST', 'SWMA.ST', 'TEL2-B.ST', 'TLSN.ST', 'VOLV-B.ST')
+#' \dontrun{downloadInstruments(c('ABB.ST'), '/somewhere/trading')}
 downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
   if(!dir.exists(paths = path)) dir.create(path = path, recursive = T)
+  p <- progress_estimated(length(instruments))
   for (i in instruments){
-    print(i)
-    tmpdf<-getSymbols(Symbols = i, src = "yahoo", from = startDate, auto.assign = FALSE)
-    colnames(tmpdf)<- c("open","high","low","close","volume","adj.")
-    # print(paste(path,"/", i,".csv",sep=""))
-    write.zoo(tmpdf, paste(path,"/", i,".csv",sep=""), sep=",",row.names=FALSE)
+    p$tick()$print()
+    tryCatch({
+      tmpdf<-getSymbols(Symbols = i, src = "yahoo", from = startDate, auto.assign = FALSE);
+      colnames(tmpdf)<- c("open","high","low","close","volume","adj.");
+      # print(paste(path,"/", i,".csv",sep=""));
+      write.zoo(tmpdf, paste(path,"/", i,".csv",sep=""), sep=",",row.names=FALSE);
+    }, error = function(e) {cat("Error with instrument: ", i); e})
   }
 }
 
@@ -43,24 +52,24 @@ downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
 #' a<-1
 updateInstruments<-function(path, startDate=Sys.Date()-60){
   theFiles <- list.files(path=path, pattern=".csv")
+  selCols <- c("open","high","low","close","volume","adj.")
   for (i in theFiles){
-    data <- read.csv(paste(path,"/",i,sep=""))
-    data <- xts(data[,c("open","high","low","close","volume","adj.")],
-               order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
-    lastHistoricalDate <- index(data[nrow(data),])
+    tryCatch({
+      data <- read.csv(paste(path,"/",i,sep=""))
+      data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
+      lastHistoricalDate <- index(data[nrow(data),])
 
-    recent <- getSymbols(Symbols = substr(i,1,nchar(i)-4), src = "yahoo", from = startDate, auto.assign = FALSE)
-    colnames(recent) <- c("open","high","low","close","volume","adj.")
+      recent <- getSymbols(Symbols = substr(i,1,nchar(i)-4), src = "yahoo", from = startDate, auto.assign = FALSE)
+      colnames(recent) <- selCols
 
-    pos <- match(as.Date(lastHistoricalDate, format="%Y-%m-%d"), index(recent))
-    if (!is.na(pos)){
-      if (pos == nrow(recent)) print("File already up-to-date")
-      if (pos < nrow(recent)){
-        dt <- NULL
-        dt <- rbind(data,recent[(pos+1):nrow(recent),])
-        write.zoo(dt, paste(path, "/", i, sep=""), sep=",", row.names=FALSE)
-      }
-    }
-    if (is.na(pos)) print("Error: dates do not match")
+      pos <- match(as.Date(lastHistoricalDate, format="%Y-%m-%d"), index(recent))
+      if (!is.na(pos)){
+        if (pos == nrow(recent)) print("File already up-to-date")
+        else if (pos < nrow(recent)){
+          dt <- rbind(data,recent[(pos+1):nrow(recent),])
+          write.zoo(dt, paste(path, "/", i, sep=""), sep=",", row.names=FALSE)
+        }
+      } else print("Error: dates do not match")
+    }, error = function(e) {cat("Problem with instrument: ", i); e})
   }
 }
