@@ -73,3 +73,30 @@ updateInstruments<-function(path, startDate=Sys.Date()-60){
     }, error = function(e) {cat("Problem with instrument: ", i); e})
   }
 }
+
+#' Load existing instruments from the database into the R environment
+#'
+#' @param path the path where all the instruments data are stored as individual CSV files
+#' @importFrom dplyr progress_estimated
+#' @importFrom xts xts
+#' @return the list of xts time series for each instrument
+#' @export
+#'
+#' @examples
+#' a<-1
+loadExistingInstruments<-function(path){
+  if(!dir.exists(paths = path)) stop("That directory does not exist!")
+  theFiles <- list.files(path=path, pattern=".csv")
+  selCols <- c("open","high","low","close","volume","adj.")
+  instrumentslist<-list()
+  p <- progress_estimated(length(theFiles))
+  for (i in theFiles){
+    p$tick()$print()
+    tryCatch({
+      data <- read.csv(paste(path,"/",i,sep=""));
+      data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"));
+      instrumentslist[[substr(i,1,nchar(i)-4)]]<-data
+    }, error = function(e) {cat("Error with instrument: ", i); e})
+  }
+  instrumentslist
+}
