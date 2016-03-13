@@ -49,7 +49,7 @@ downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
 #' @export
 #'
 #' @examples
-#' a<-1
+#' \dontrun{updateInstruments("/somewhere/trading")}
 updateInstruments<-function(path, startDate=Sys.Date()-60){
   theFiles <- list.files(path=path, pattern=".csv")
   selCols <- c("open","high","low","close","volume","adj.")

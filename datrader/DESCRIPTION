@@ -9,4 +9,4 @@ Description: This package is a collection of useful routines to select, evaluate
 License: MIT
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Depends: xts, zoo, quantmod
+Depends: xts, zoo, quantmod, dplyr
