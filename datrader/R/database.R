@@ -45,6 +45,7 @@ downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
 #' @importFrom xts xts
 #' @importFrom zoo write.zoo
 #' @importFrom zoo index
+#' @importFrom utils read.csv
 #' @return Nothing
 #' @export
 #'
