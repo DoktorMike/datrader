@@ -10,5 +10,5 @@ omxs30Symbols<-c('ABB.ST', 'ALFA.ST', 'ASSA-B.ST', 'AZN.ST', 'ATCO-A.ST',
 
 # Should only run once!
 # downloadInstruments(omxs30Symbols, mypath, '2000-01-01')
-updateInstruments(mypath, "2016-01-01")
+updateInstruments(mypath)
 
