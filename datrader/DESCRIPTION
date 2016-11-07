@@ -6,7 +6,7 @@ Author: Dr. Michael Green <micke.green@gmail.com>
 Maintainer: Dr. Michael Green <micke.green@gmail.com>
 Description: This package is a collection of useful routines to select, evaluate
     and execute trading strategies.
-License: MIT
+License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Depends: xts, zoo, quantmod, dplyr
