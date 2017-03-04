@@ -9,7 +9,7 @@ omxs30Symbols<-c('ABB.ST', 'ALFA.ST', 'ASSA-B.ST', 'AZN.ST', 'ATCO-A.ST',
                  'SSAB-A.ST', 'SHB-A.ST', 'SWED-A.ST', 'SWMA.ST', 'TEL2-B.ST', 'TLSN.ST', 'VOLV-B.ST')
 
 # Should only run once!
-# downloadInstruments(omxs30Symbols, mypath, '2000-01-01')
-updateInstruments(mypath)
+downloadInstruments(omxs30Symbols, mypath, '2000-01-01')
+# updateInstruments(mypath)
 # updateInstruments(mypath, startDate = Sys.Date() - 90)
 
