@@ -9,13 +9,30 @@ library(damodel)
 mypath <- '/home/michael/Dropbox/Development/trading'
 mylist <- loadExistingInstruments(mypath)
 
-# Analyse one stock
+# Getting derivative parameters from a polynomial of the form
+# f(x) = b0+b1*x1+b2*x²+b3*x³+...+bn*x^n
+polyDeriv <- function(b) { a<-tail(b, length(b)-1); a*(1:length(a)) }
+
+# Getting minima and maxima positions from a polynomial of the form
+# f(x) = b0+b1*x1+b2*x²+b3*x³+...+bn*x^n
+polyTurnpoints <- function(b) Re(polyroot(polyDeriv(b)))
+
+prepInstr<-function(x, horizon) x %>% as.data.frame() %>% rownames_to_column("date") %>%
+  mutate(date = as.Date(date)) %>% tail(horizon) %>% mutate(cnt = 1:n())
+
+FindBestPoly<-function(x, horizon) {
+  tmpdf <- prepInstr(x, horizon)
+  mylm1<-lm(close~poly(cnt, degree = 1, raw = T), data=tmpdf)
+  mylm2<-lm(close~poly(cnt, degree = 2, raw = T), data=tmpdf)
+  mylm3<-lm(close~poly(cnt, degree = 3, raw = T), data=tmpdf)
+
+  summary(mylm3)$r.squared/summary(mylm2)$r.squared
+}
 
 # A strategy of following the trend if positive within a horizon of days
 # x is given as an xts class with open, high, low, close, volume, adj.
-trendStrategy<-function(x, horizon=30){
-  tmpdf <- x %>% as.data.frame() %>% rownames_to_column("date") %>%
-    mutate(date = as.Date(date)) %>% tail(horizon) %>% mutate(cnt = 1:n())
+trend2Strategy<-function(x, horizon=30){
+  tmpdf <- prepInstr(x, horizon)
   mylm <- lm(close ~ cnt + I(cnt ^ 2), data = tmpdf)
   b <- coef(mylm)
   xloc <- -b[2] / (2 * b[3])
@@ -41,23 +58,30 @@ trendStrategy<-function(x, horizon=30){
 }
 
 trend3Strategy<-function(x, horizon=30){
-  tmpdf <- x %>% as.data.frame() %>% rownames_to_column("date") %>%
-    mutate(date = as.Date(date)) %>% tail(horizon) %>% mutate(cnt = 1:n())
+  # browser()
+  degree <- 3
+  tmpdf <- prepInstr(x, horizon)
   mylm <- lm(close ~ cnt + I(cnt ^ 2) + I(cnt ^ 3), data = tmpdf)
   b <- coef(mylm)
-  xloc <- -b[2] / (2 * b[3])
-  minima <- ifelse(b[3]<0, FALSE, TRUE)
+  xloc <- polyTurnpoints(b)
+  bp2 <- polyDeriv(polyDeriv(b))
+  # Is the last turnpoint a minima?
+  tmpdf2 <- poly(tmpdf$cnt, degree = degree, raw = T) %>% as.data.frame()
+  xloclast <- tail(xloc, 1)
+  # Clac 2nd derivative at last turnpoint
+  sndderiv<-tail(tail(xloc, 1)^(c(seq(1, degree, 1))), degree-2) * tail(bp2, degree-2) + bp2[1]
+  lastturnmin <- ifelse(sndderiv<0, FALSE, TRUE)
 
   # Decide to invest or not
   invest<-FALSE
-  if(minima){ # We have a minima function
-    if(xloc < horizon){ # Minima has happened and curve is going up
+  if(lastturnmin){ # We have a minima function
+    if(xloclast < horizon){ # Minima has happened and curve is going up
       invest <- TRUE
     }else{ # Minima will most likely happen but it's in the future and we only have a negative trend
       invest <- FALSE
     }
   }else{ # We have a maxima
-    if(xloc < horizon){ # Maxima has happened and curve is going down
+    if(xloclast < horizon){ # Maxima has happened and curve is going down
       invest <- FALSE
     }else{ # Maxima will most likely happen but it's in the future and we only have a positive trend
       invest <- TRUE
@@ -67,22 +91,4 @@ trend3Strategy<-function(x, horizon=30){
   return(ret)
 }
 
-tmpdf<-mylist$ABB.ST %>% as.data.frame() %>% rownames_to_column("date") %>%
-  mutate(date=as.Date(date)) %>% tail(40) %>% mutate(cnt=1:n())
-mylm<-lm(close~cnt+I(cnt^2), data=tmpdf)
-b<-coef(mylm)
-xloc <- -b[2]/(2*b[3])
-
-if(minima){ # We have a minima function
-  if(xloc < horizon){ # Minima has happened and curve is going up
-
-  }else{ # Minima will most likely happen but it's in the future and we only have a negative trend
-
-  }
-}else{ # We have a maxima
-  if(xloc < horizon){ # Maxima has happened and curve is going down
-
-  }else{ # Maxima will most likely happen but it's in the future and we only have a positive trend
-
-  }
-}
+x<-mylist$ALFA.ST; h<-30; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
