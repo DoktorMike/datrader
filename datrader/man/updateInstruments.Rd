@@ -23,4 +23,3 @@ Nothing.
 \examples{
 \dontrun{updateInstruments("/somewhere/trading")}
 }
-

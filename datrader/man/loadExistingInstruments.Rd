@@ -18,4 +18,3 @@ Load existing instruments from the database into the R environment
 \examples{
 a<-1
 }
-

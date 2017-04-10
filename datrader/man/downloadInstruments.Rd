@@ -30,4 +30,3 @@ omxs30Symbols<-c('ABB.ST', 'ALFA.ST', 'ASSA-B.ST', 'AZN.ST', 'ATCO-A.ST',
 'SSAB-A.ST', 'SHB-A.ST', 'SWED-A.ST', 'SWMA.ST', 'TEL2-B.ST', 'TLSN.ST', 'VOLV-B.ST')
 \dontrun{downloadInstruments(c('ABB.ST'), '/somewhere/trading')}
 }
-
