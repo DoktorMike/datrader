@@ -36,6 +36,18 @@ FindBestPoly<-function(x, horizon=30, cutoff=0.1, debug=FALSE) {
   ifelse(length(b)>0, b, 1)
 }
 
+trend1Strategy<-function(x, horizon=30){
+  tmpdf <- prepInstr(x, horizon)
+  mylm <- lm(close ~ cnt, data = tmpdf)
+  b <- coef(mylm)
+
+  # Decide to invest or not
+  if(b[2]>0) ret <- list(Invest=TRUE, Model=mylm)
+  else ret <- list(Invest=FALSE, Model=mylm)
+
+  return(ret)
+}
+
 # A strategy of following the trend if positive within a horizon of days
 # x is given as an xts class with open, high, low, close, volume, adj.
 trend2Strategy<-function(x, horizon=30){
