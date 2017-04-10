@@ -20,13 +20,20 @@ polyTurnpoints <- function(b) Re(polyroot(polyDeriv(b)))
 prepInstr<-function(x, horizon) x %>% as.data.frame() %>% rownames_to_column("date") %>%
   mutate(date = as.Date(date)) %>% tail(horizon) %>% mutate(cnt = 1:n())
 
-FindBestPoly<-function(x, horizon) {
+# Find the best polymomial size to use. Best here means an improvement in R² of at least
+# "cutoff". This is quite shaky statistically speaking but fuck it.
+FindBestPoly<-function(x, horizon=30, cutoff=0.1, debug=FALSE) {
   tmpdf <- prepInstr(x, horizon)
   mylm1<-lm(close~poly(cnt, degree = 1, raw = T), data=tmpdf)
   mylm2<-lm(close~poly(cnt, degree = 2, raw = T), data=tmpdf)
   mylm3<-lm(close~poly(cnt, degree = 3, raw = T), data=tmpdf)
 
-  summary(mylm3)$r.squared/summary(mylm2)$r.squared
+  a<-c(Poly3=summary(mylm3)$r.squared/summary(mylm2)$r.squared,
+       Poly2=summary(mylm2)$r.squared/summary(mylm1)$r.squared,
+       Poly1=1)
+  if(debug) print(a)
+  b<-head(which(a-1 > cutoff), 1)
+  ifelse(length(b)>0, b, 1)
 }
 
 # A strategy of following the trend if positive within a horizon of days
