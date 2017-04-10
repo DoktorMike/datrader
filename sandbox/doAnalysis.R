@@ -91,4 +91,4 @@ trend3Strategy<-function(x, horizon=30){
   return(ret)
 }
 
-x<-mylist$ALFA.ST; h<-30; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
+x<-mylist$NFLX; h<-60; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
