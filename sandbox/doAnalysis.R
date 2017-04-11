@@ -113,4 +113,45 @@ trend3Strategy<-function(x, horizon=30){
   return(ret)
 }
 
-x<-mylist$NFLX; h<-60; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
+# Generate historical positions based on a trading strategy.
+generateHistoricalPositions <- function(x, tstrat, h=60) {
+  mypos<-rep(0,nrow(x))
+  for(i in h:nrow(x)) mypos[i]<-ifelse(tstrat(x[(i-h):i,], h)$Invest==TRUE, 1, 0)
+  mypos
+}
+
+# Plot the historical positions based on a trading strategy along with the price over time
+plotHistoricalPositions<-function(x, pos) {
+  tibble(Date=as.Date(index(x)), Price=as.vector(Cl(x)), Invest=pos) %>%
+    gather(Key, Value, -Date) %>% ggplot(aes(y=Value, x=Date, color=Key, group=Key)) +
+    geom_line() + facet_grid(Key~., scales = "free")
+}
+
+# How many trades are made in this position vector?
+numTrades<-function(p) length(which(abs(diff(p))>0))
+
+# x<-mylist$NFLX; h<-60; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
+
+# Test
+mytib<-data.frame(Name=as.character(length(nasdaqSymbols)),
+                  Trading=as.numeric(length(nasdaqSymbols)),
+                  stringsAsFactors = FALSE)
+for(i in 1:length(nasdaqSymbols)){
+  cost <- 30/7 # 30 DKK in Dollars
+  x<-mylist[[nasdaqSymbols[i]]]; h<-60;
+  x<-tail(x, 730)
+  mypos<-generateHistoricalPositions(x, trend3Strategy, h)
+  print(paste0("Doing: ", nasdaqSymbols[i]))
+  # plotHistoricalPositions(x, mypos)
+  # browser()
+  a<-dailyReturn(x)*mypos; a[which(a==0)]<-NA; a<-a[!is.na(a)]
+  b<-dailyReturn(x)
+  mytib[i, "Name"] <- nasdaqSymbols[i]
+  mytib[i, "Trading"] <- length(which(a>0))/length(a)
+  mytib[i, "Hold"] <- length(which(b>0))/length(b)
+  mytib[i, "Trading1000"] <- prod(1+a)*1000 - numTrades(mypos)*cost
+  mytib[i, "Hold1000"] <- prod(1+b)*1000 - cost
+
+  # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(y=value, x=key, group=key, color=key)) + geom_boxplot() + facet_wrap(~key)
+  # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(x=value, group=key, color=key)) + geom_histogram() + facet_wrap(~key, scales = "free")
+}
