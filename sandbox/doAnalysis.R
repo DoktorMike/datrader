@@ -27,12 +27,15 @@ FindBestPoly<-function(x, horizon=30, cutoff=0.1, debug=FALSE) {
   mylm1<-lm(close~poly(cnt, degree = 1, raw = T), data=tmpdf)
   mylm2<-lm(close~poly(cnt, degree = 2, raw = T), data=tmpdf)
   mylm3<-lm(close~poly(cnt, degree = 3, raw = T), data=tmpdf)
+  mylm4<-lm(close~poly(cnt, degree = 4, raw = T), data=tmpdf)
 
-  a<-c(Poly3=summary(mylm3)$r.squared/summary(mylm2)$r.squared,
+  a<-c(Poly1=1,
        Poly2=summary(mylm2)$r.squared/summary(mylm1)$r.squared,
-       Poly1=1)
+       Poly3=summary(mylm3)$r.squared/summary(mylm2)$r.squared,
+       Poly4=summary(mylm4)$r.squared/summary(mylm3)$r.squared)
+  # browser()
   if(debug) print(a)
-  b<-head(which(a-1 > cutoff), 1)
+  b<-tail(which(a-1 > cutoff), 1)
   ifelse(length(b)>0, b, 1)
 }
 
