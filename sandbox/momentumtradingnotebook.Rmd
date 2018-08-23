@@ -34,6 +34,12 @@ nasdaqSymbols<-c('MSFT', 'IBM', 'FB', 'GOOG', 'AMZN', 'NFLX',
                  'TSLA', 'VLKAY', 'F')
 ```
 
+We can have a look at how the Microsoft share has done over the years.
+
+```{r msft, echo=FALSE, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE}
+chart_Series(mylist$MSFT)
+```
+
 ## Trading strategy
 
 We define a trading strategy as a function taking an xts time series featuring OHLC and based on a horizon decide weather to invest or not. The strategy we are concerned with in this notebook is the momentum strategy. It combines momentum together with risk. Basically it invests if
