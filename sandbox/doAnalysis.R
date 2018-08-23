@@ -1,10 +1,10 @@
+library(tidyverse)
 library(datrader)
+library(datools)
 library(quantmod)
 library(ggplot2)
-library(tidyr)
-library(tibble)
-library(dplyr)
-library(damodel)
+library(xts)
+library(TTR)
 
 mypath <- '/home/michael/Dropbox/Development/trading'
 mylist <- loadExistingInstruments(mypath)
@@ -113,6 +113,16 @@ trend3Strategy<-function(x, horizon=30){
   return(ret)
 }
 
+momentumStrategy <- function(x, horizon=30){
+  xhor <- tail(x, horizon)
+  m <- tail(momentum(Cl(xhor), n=horizon-1), 1)[[1]]
+  v <- tail(volatility(xhor, n=horizon), 1)[[1]]
+  value <- m/v
+  # browser()
+  if(value > 0) return(list(Invest=TRUE))
+  return(list(Invest=FALSE))
+}
+
 # Generate historical positions based on a trading strategy.
 generateHistoricalPositions <- function(x, tstrat, h=60) {
   mypos<-rep(0,nrow(x))
@@ -137,10 +147,10 @@ mytib<-data.frame(Name=as.character(length(nasdaqSymbols)),
                   Trading=as.numeric(length(nasdaqSymbols)),
                   stringsAsFactors = FALSE)
 for(i in 1:length(nasdaqSymbols)){
-  cost <- 30/7 # 30 DKK in Dollars
-  x<-mylist[[nasdaqSymbols[i]]]; h<-60;
-  x<-tail(x, 730)
-  mypos<-generateHistoricalPositions(x, trend3Strategy, h)
+  cost <- 100/7 # 100 DKK in Dollars
+  x<-mylist[[nasdaqSymbols[i]]]; h<-90;
+  x<-tail(x, 1573)
+  mypos<-generateHistoricalPositions(x, momentumStrategy, h)
   print(paste0("Doing: ", nasdaqSymbols[i]))
   # plotHistoricalPositions(x, mypos)
   # browser()
@@ -155,3 +165,12 @@ for(i in 1:length(nasdaqSymbols)){
   # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(y=value, x=key, group=key, color=key)) + geom_boxplot() + facet_wrap(~key)
   # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(x=value, group=key, color=key)) + geom_histogram() + facet_wrap(~key, scales = "free")
 }
+
+tickerListToDataFrame<-function(x){
+  stopifnot(is.list(x))
+  for(i in seq_along(x)){
+
+  }
+}
+
+chartSeries(mylist$MSFT, TA="addMomentum(n=90);addVolatility(n=90)")
