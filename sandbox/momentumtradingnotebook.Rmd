@@ -1,0 +1,96 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Momentum Trading
+
+## Data loading
+
+```{r loaddata, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(tidyverse)
+library(datrader)
+library(datools)
+library(quantmod)
+library(ggplot2)
+library(xts)
+library(TTR)
+
+mypath<-'/home/michael/Dropbox/Development/trading'
+mylist<- loadExistingInstruments(mypath)
+```
+
+We start by loading the data from our database. We can view the instruments present.
+
+```{r}
+names(mylist)
+```
+
+We will only focus on the most interesting ones for now which we'll define below.
+
+```{r}
+nasdaqSymbols<-c('MSFT', 'IBM', 'FB', 'GOOG', 'AMZN', 'NFLX',
+                 'NVDA', 'AMD', 'INTC',
+                 'TSLA', 'VLKAY', 'F')
+```
+
+## Trading strategy
+
+We define a trading strategy as a function taking an xts time series featuring OHLC and based on a horizon decide weather to invest or not. The strategy we are concerned with in this notebook is the momentum strategy. It combines momentum together with risk. Basically it invests if
+
+$$\frac{m(x)}{v(x)}>0$$
+and holds the position until that condition is no longer true.
+
+```{r}
+momentumStrategy <- function(x, horizon=30){
+  xhor <- tail(x, horizon)
+  m <- tail(momentum(Cl(xhor), n=horizon-1), 1)[[1]]
+  v <- tail(volatility(xhor, n=horizon), 1)[[1]]
+  value <- m/v
+  # browser()
+  if(value > 0) return(list(Invest=TRUE))
+  return(list(Invest=FALSE))
+}
+```
+
+Before moving on we also need to define a function for generating positions based on a strategy. This can be achieved by this code.
+
+```{r}
+# Generate historical positions based on a trading strategy.
+generateHistoricalPositions <- function(x, tstrat, h=60) {
+  mypos<-rep(0,nrow(x))
+  for(i in h:nrow(x)) mypos[i]<-ifelse(tstrat(x[(i-h):i,], h)$Invest==TRUE, 1, 0)
+  mypos
+}
+
+# How many trades are made in this position vector?
+numTrades<-function(p) length(which(abs(diff(p))>0))
+```
+
+Armed with this we can actually run through our symbols and apply our strategy. We do that by backtesting against a buy-and-hold strategy.
+
+```{r}
+mytib<-data.frame(Name=as.character(length(nasdaqSymbols)),
+                  Trading=as.numeric(length(nasdaqSymbols)),
+                  stringsAsFactors = FALSE)
+for(i in 1:length(nasdaqSymbols)){
+  cost <- 100/7 # 100 DKK in Dollars
+  x<-mylist[[nasdaqSymbols[i]]]; h<-90;
+  x<-tail(x, 1573)
+  mypos<-generateHistoricalPositions(x, momentumStrategy, h)
+  a<-dailyReturn(x)*mypos; a[which(a==0)]<-NA; a<-a[!is.na(a)]
+  b<-dailyReturn(x)
+  mytib[i, "Name"] <- nasdaqSymbols[i]
+  mytib[i, "Trading"] <- length(which(a>0))/length(a)
+  mytib[i, "Hold"] <- length(which(b>0))/length(b)
+  mytib[i, "Trading1000"] <- prod(1+a)*1000 - numTrades(mypos)*cost
+  mytib[i, "Hold1000"] <- prod(1+b)*1000 - cost
+}
+```
+
+After running this we can see that our strategy actually beats buy and hold over a long period of time which is actually not bad at all.
+
+```{r}
+mytib %>% mutate(ImprovementIndex=100*round(Trading1000/Hold1000,2))
+```
+
