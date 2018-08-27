@@ -113,13 +113,14 @@ trend3Strategy<-function(x, horizon=30){
   return(ret)
 }
 
-momentumStrategy <- function(x, horizon=30){
+momentumStrategy <- function(x, horizon=30, cutoff=0){
+  # Calculate risk adjusted momentum using the past horizon days
   xhor <- tail(x, horizon)
   m <- tail(momentum(Cl(xhor), n=horizon-1), 1)[[1]]
   v <- tail(volatility(xhor, n=horizon), 1)[[1]]
   value <- m/v
-  # browser()
-  if(value > 0) return(list(Invest=TRUE))
+  # If above cutoff do a trade
+  if(value > cutoff) return(list(Invest=TRUE))
   return(list(Invest=FALSE))
 }
 
@@ -143,27 +144,30 @@ numTrades<-function(p) length(which(abs(diff(p))>0))
 # x<-mylist$NFLX; h<-60; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
 
 # Test
-mytib<-data.frame(Name=as.character(length(nasdaqSymbols)),
-                  Trading=as.numeric(length(nasdaqSymbols)),
-                  stringsAsFactors = FALSE)
-for(i in 1:length(nasdaqSymbols)){
-  cost <- 100/7 # 100 DKK in Dollars
-  x<-mylist[[nasdaqSymbols[i]]]; h<-90;
-  x<-tail(x, 1573)
-  mypos<-generateHistoricalPositions(x, momentumStrategy, h)
-  print(paste0("Doing: ", nasdaqSymbols[i]))
-  # plotHistoricalPositions(x, mypos)
-  # browser()
-  a<-dailyReturn(x)*mypos; a[which(a==0)]<-NA; a<-a[!is.na(a)]
-  b<-dailyReturn(x)
-  mytib[i, "Name"] <- nasdaqSymbols[i]
-  mytib[i, "Trading"] <- length(which(a>0))/length(a)
-  mytib[i, "Hold"] <- length(which(b>0))/length(b)
-  mytib[i, "Trading1000"] <- prod(1+a)*1000 - numTrades(mypos)*cost
-  mytib[i, "Hold1000"] <- prod(1+b)*1000 - cost
+evaluateStrategy <- function(stocks, strategy, horizon=90, investment=1000, cost=10) {
+  tickers <- names(stocks)
+  mytib<-data.frame(Name=as.character(length(tickers)),
+                    Trading=as.numeric(length(tickers)),
+                    stringsAsFactors = FALSE)
+  for(i in 1:length(tickers)){
+    x<-stocks[[tickers[i]]]; h<-horizon;
+    x<-tail(x, 1573)
+    mypos<-generateHistoricalPositions(x, strategy, h)
+    print(paste0("Doing: ", tickers[i]))
+    # plotHistoricalPositions(x, mypos)
+    # browser()
+    a<-dailyReturn(x)*mypos; a[which(a==0)]<-NA; a<-a[!is.na(a)]
+    b<-dailyReturn(x)
+    mytib[i, "Name"] <- tickers[i]
+    mytib[i, "Trading"] <- length(which(a>0))/length(a)
+    mytib[i, "Hold"] <- length(which(b>0))/length(b)
+    mytib[i, "Trading1000"] <- prod(1+a)*1000 - numTrades(mypos)*cost
+    mytib[i, "Hold1000"] <- prod(1+b)*1000 - cost
 
-  # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(y=value, x=key, group=key, color=key)) + geom_boxplot() + facet_wrap(~key)
-  # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(x=value, group=key, color=key)) + geom_histogram() + facet_wrap(~key, scales = "free")
+    # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(y=value, x=key, group=key, color=key)) + geom_boxplot() + facet_wrap(~key)
+    # tibble(Traded=as.vector(dailyReturn(x)*mypos), Random=as.vector(dailyReturn(x))) %>% gather() %>% ggplot(aes(x=value, group=key, color=key)) + geom_histogram() + facet_wrap(~key, scales = "free")
+  }
+  mytib
 }
 
 tickerListToDataFrame<-function(x){
