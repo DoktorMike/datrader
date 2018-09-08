@@ -75,6 +75,38 @@ updateInstruments<-function(path, startDate=Sys.Date()-60){
   }
 }
 
+
+#' Extract the earliest last observed date in all stored instruments
+#'
+#' Each instrument has it's own date range and this function runs through all
+#' of them identifying the earliest last observed date. It is intended to help
+#' you identify from which date you need to update your database.
+#'
+#' @param path the path where your data is stored as csv's
+#'
+#' @return the earliest observed last date
+#' @export
+#'
+#' @examples
+#' \dontrun{updateInstruments("/somewhere/trading")}
+findLastDateInInstruments<-function(path){
+  theFiles <- list.files(path=path, pattern=".csv")
+  selCols <- c("open","high","low","close","volume","adj.")
+  oldestLastHistoricalDate <- Sys.Date()
+  p <- progress_estimated(length(theFiles))
+  for (i in theFiles){
+    p$tick()$print()
+    tryCatch({
+      data <- read.csv(paste(path,"/",i,sep=""))
+      data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
+      lastHistoricalDate <- index(data[nrow(data),])
+      if(lastHistoricalDate < oldestLastHistoricalDate)
+        oldestLastHistoricalDate <- lastHistoricalDate
+    }, error = function(e) {cat("Problem with instrument: ", i); e})
+  }
+  oldestLastHistoricalDate
+}
+
 #' Load existing instruments from the database into the R environment
 #'
 #' @param path the path where all the instruments data are stored as individual CSV files

@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-Strategy <- function(invest,){
+Strategy <- function(invest){
   ret <- list(Invest=invest)
   class(ret) <- c("Strategy", "list")
   ret
