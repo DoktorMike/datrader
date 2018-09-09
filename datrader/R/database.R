@@ -56,8 +56,8 @@ updateInstruments<-function(path, startDate=Sys.Date()-60){
   selCols <- c("open","high","low","close","volume","adj.")
   for (i in theFiles){
     tryCatch({
-      data <- read.csv(paste(path,"/",i,sep=""))
-      data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
+      data <- readInstrument(paste(path,"/",i,sep=""))
+      data <- xts(data[,selCols], order.by = as.Date(data[["Index"]]))
       lastHistoricalDate <- index(data[nrow(data),])
 
       recent <- getSymbols(Symbols = substr(i,1,nchar(i)-4), src = "yahoo", from = startDate, auto.assign = FALSE)
