@@ -31,3 +31,7 @@ instlist <- loadExistingInstruments(gsub("/FB.csv", "", fbpath))
 test_that("multiple data can be loaded", {
   expect_true(setequal(c("FB", "MSFT", "NFLX"), names(instlist)))
 })
+
+test_that("last date is correct", {
+  expect_true(findLastDateInInstruments(gsub("/FB.csv", "", fbpath)) == "2018-09-07")
+})

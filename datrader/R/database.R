@@ -100,8 +100,8 @@ findLastDateInInstruments<-function(path){
       fname <- paste(path,"/",i,sep="")
       command <- paste("wc -l", fname, "| awk '{print $1}'")
       nlines <- as.integer(system(command, intern = TRUE))
-      data <- read.csv(fname)
-      data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
+      data <- readInstrument(paste(path,"/",i,sep=""))
+      data <- xts(data[,selCols], order.by = as.Date(data[["Index"]]))
       lastHistoricalDate <- index(data[nrow(data),])
       if(lastHistoricalDate < oldestLastHistoricalDate)
         oldestLastHistoricalDate <- lastHistoricalDate
