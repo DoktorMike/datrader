@@ -7,6 +7,7 @@
 #' @export
 #'
 #' @examples
+#' a<-1
 Strategy <- function(invest){
   ret <- list(Invest=invest)
   class(ret) <- c("Strategy", "list")
@@ -21,4 +22,5 @@ Strategy <- function(invest){
 #' @export
 #'
 #' @examples
+#' a<-1
 buyandholdSignal<-function(stocks) rep(1, length(stocks))

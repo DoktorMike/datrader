@@ -9,4 +9,6 @@ Description: This package is a collection of useful routines to select, evaluate
 License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 6.1.0
+Encoding: UTF-8
+Imports: readr
 Depends: xts, zoo, quantmod, dplyr

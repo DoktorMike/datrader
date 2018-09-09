@@ -16,3 +16,6 @@ a Strategy instantiated with investment stratey invest.
 \description{
 Type for Investment strategies
 }
+\examples{
+a<-1
+}

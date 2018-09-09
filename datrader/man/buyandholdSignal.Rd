@@ -15,3 +15,6 @@ a vector of investment decisions
 \description{
 A buy and hold decision function
 }
+\examples{
+a<-1
+}

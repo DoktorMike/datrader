@@ -97,7 +97,10 @@ findLastDateInInstruments<-function(path){
   for (i in theFiles){
     p$tick()$print()
     tryCatch({
-      data <- read.csv(paste(path,"/",i,sep=""))
+      fname <- paste(path,"/",i,sep="")
+      command <- paste("wc -l", fname, "| awk '{print $1}'")
+      nlines <- as.integer(system(command, intern = TRUE))
+      data <- read.csv(fname)
       data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"))
       lastHistoricalDate <- index(data[nrow(data),])
       if(lastHistoricalDate < oldestLastHistoricalDate)
@@ -126,10 +129,44 @@ loadExistingInstruments<-function(path){
   for (i in theFiles){
     p$tick()$print()
     tryCatch({
-      data <- read.csv(paste(path,"/",i,sep=""));
+      data <- readInstrument(paste(path,"/",i,sep=""))
       data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"));
       instrumentslist[[substr(i,1,nchar(i)-4)]]<-data
     }, error = function(e) {cat("Error with instrument: ", i); e})
   }
   instrumentslist
+}
+
+
+#' Read an instrument from a CSV formatted file
+#'
+#' The format of the file read mus look like in the details section.
+#' This is also how your resulting tibble will be organized. No other
+#' formats are supported.
+#'
+#' "Index","open","high","low","close","volume","adj."
+#' "1999-11-18",32.546494,35.765381,28.612303,31.473534,62546300,27.494957
+#' "1999-11-19",30.71352,30.758226,28.478184,28.880543,15234100,25.229753
+#' "1999-11-22",29.551144,31.473534,28.657009,31.473534,6577800,27.494957
+#' "1999-11-23",30.400572,31.205294,28.612303,28.612303,5975600,24.995413
+#' "1999-11-24",28.701717,29.998211,28.612303,29.372318,4843200,25.659359
+#'
+#' @param fname the csv file to load
+#'
+#' @return a tibble representing the data
+#' @importFrom readr read_csv cols col_double col_integer col_date
+#' @export
+#'
+#' @examples
+#' \dontrun{readInstrument("/somewhere/trading/AA.csv")}
+readInstrument <- function(fname) {
+  data <- readr::read_csv(fname,
+                          col_types = readr::cols(Index = readr::col_date(format = "%Y-%m-%d"),
+                                           open = readr::col_double(),
+                                           high = readr::col_double(),
+                                           low = readr::col_double(),
+                                           close = readr::col_double(),
+                                           volume = readr::col_integer(),
+                                           adj. = readr::col_double()))
+  data
 }
