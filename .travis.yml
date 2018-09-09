@@ -2,3 +2,5 @@ language: r
 cache: packages
 before_install:
   - cd datrader
+after_success:
+  - Rscript -e 'covr::codecov()'

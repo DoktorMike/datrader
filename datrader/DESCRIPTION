@@ -2,8 +2,8 @@ Package: datrader
 Type: Package
 Title: Allow People To Do Intelligent Trading
 Version: 0.1.0
-Author: Dr. Michael Green <micke.green@gmail.com>
-Maintainer: Dr. Michael Green <micke.green@gmail.com>
+Author: Dr. Michael Green \email{micke.green@@gmail.com}
+Maintainer: Dr. Michael Green \email{micke.green@@gmail.com}
 Description: This package is a collection of useful routines to select, evaluate
     and execute trading strategies.
 License: MIT + file LICENSE
@@ -12,3 +12,5 @@ RoxygenNote: 6.1.0
 Encoding: UTF-8
 Imports: readr
 Depends: xts, zoo, quantmod, dplyr
+Suggests: covr,
+    testthat
