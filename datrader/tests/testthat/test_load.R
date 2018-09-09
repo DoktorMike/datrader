@@ -25,3 +25,9 @@ fb4lines <-
 test_that("installed data is correct", {
   expect_true(all(head(readInstrument(fbpath), 4)==fb4lines))
 })
+
+instlist <- loadExistingInstruments(gsub("/FB.csv", "", fbpath))
+
+test_that("multiple data can be loaded", {
+  expect_true(setequal(c("FB", "MSFT", "NFLX"), names(instlist)))
+})

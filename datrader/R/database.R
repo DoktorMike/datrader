@@ -130,7 +130,7 @@ loadExistingInstruments<-function(path){
     p$tick()$print()
     tryCatch({
       data <- readInstrument(paste(path,"/",i,sep=""))
-      data <- xts(data[,selCols], order.by = as.Date(data[,"Index"],format="%Y-%m-%d"));
+      data <- xts(data[,selCols], order.by = as.Date(data[["Index"]]))
       instrumentslist[[substr(i,1,nchar(i)-4)]]<-data
     }, error = function(e) {cat("Error with instrument: ", i); e})
   }
