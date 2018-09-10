@@ -28,7 +28,9 @@ downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
       tmpdf<-getSymbols(Symbols = i, src = "yahoo", from = startDate, auto.assign = FALSE);
       colnames(tmpdf)<- c("open","high","low","close","volume","adj.");
       # print(paste(path,"/", i,".csv",sep=""));
+      options(scipen = 999);
       write.zoo(tmpdf, paste(path,"/", i,".csv",sep=""), sep=",",row.names=FALSE);
+      options(scipen = 0);
     }, error = function(e) {cat("Error with instrument: ", i); e})
   }
 }
@@ -68,7 +70,9 @@ updateInstruments<-function(path, startDate=Sys.Date()-60){
         if (pos == nrow(recent)) print("File already up-to-date")
         else if (pos < nrow(recent)){
           dt <- rbind(data,recent[(pos+1):nrow(recent),])
+          options(scipen = 999)
           write.zoo(dt, paste(path, "/", i, sep=""), sep=",", row.names=FALSE)
+          options(scipen = 0)
         }
       } else print("Error: dates do not match")
     }, error = function(e) {cat("Problem with instrument: ", i); e})

@@ -24,3 +24,23 @@ Strategy <- function(invest){
 #' @examples
 #' a<-1
 buyandholdSignal<-function(stocks) rep(1, length(stocks))
+
+
+evaluate <- function(strategy, market){
+  h <- horizon(strategy)
+}
+
+
+# Normal
+a<-data.frame(A=c(10,10000, 1000000, 100000000000000), B=c(0.1,0.2,0.3,0.4))
+write.csv(a, file = "crap.csv")
+b<-read.csv("crap.csv")
+
+
+# Scipen
+a<-data.frame(A=c(10,10000, 1000000, 100000000000000), B=c(0.1,0.2,0.3,0.4))
+options(scipen = 999)
+write.csv(a, file = "crap.csv")
+options(scipen = 0)
+b<-read.csv("crap.csv")
+
