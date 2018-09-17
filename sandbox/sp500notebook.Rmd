@@ -1,0 +1,82 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+## Trading on SP500
+
+Now we're going to load the entire SP500 stocks into our list and backtest the momentum strategy on that. So let's first load the data.
+
+```{r loadsp500data, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(tidyverse)
+library(datrader)
+library(datools)
+library(quantmod)
+library(ggplot2)
+library(xts)
+library(TTR)
+
+source('functions.R')
+
+mypath <- "~/Dropbox/Datasets/matrix/finance/data/sp500/csv"
+mylist<- loadExistingInstruments(mypath)
+mylist <- filterUnwantedStocks(mylist)
+```
+
+Here we have the same basic principle as before but now we'll also visualize a bit what's going on. We can show the price movements along with the indicators we are using for our decision making.
+
+```{r AMAT, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE}
+chartSeries(mylist$AMAT)
+chartSeries(mylist$MSFT, TA="addMomentum(n=90);addVolatility(n=90)")
+```
+
+In this example we'll show the development of Microsoft with momentum and volatility over a 90 day horizon.
+
+```{r MSFT, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE}
+chartSeries(mylist$MSFT, TA="addMomentum(n=90);addVolatility(n=90)")
+```
+
+## Trading
+
+We won't evaluate the entire SP500 right now but pick a few examples to evaluate at first. We will run a number of simulations and run them through one at a time. In all scenarios we invest 10000 USD.
+
+### 10 random stocks from all years
+
+```{r evaltenrandomallyears, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+# Random 10 stock full period
+eval10allyearsdf <- evaluateStrategy(sample(mylist, 10), strategy = momentumStrategy, horizon = 90, cost = 1)
+```
+
+```{r}
+eval10allyearsdf %>% knitr::kable()
+```
+
+Total profitability is `r sum(eval10allyearsdf$Trading1000) %>% scales::dollar()` compared to `r sum(eval10allyearsdf$Hold1000) %>% scales::dollar()`.
+
+### 10 random stocks last year
+
+```{r evaltenrandomlastyears, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+# Random 10 stocks last year
+tmplist <- lapply(mylist, function(x) tail(x, 365))
+eval10lastyeardf <- evaluateStrategy(sample(tmplist, 10), strategy = momentumStrategy, horizon = 90, cost = 1)
+```
+
+```{r}
+eval10lastyeardf %>% knitr::kable()
+```
+
+Total profitability is `r sum(eval10lastyeardf$Trading1000) %>% scales::dollar()` compared to `r sum(eval10lastyeardf$Hold1000) %>% scales::dollar()`.
+
+### 10 random stocks last 2 years
+
+```{r evaltenrandomlast2years, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+# Random 10 stocks last 2 years
+tmplist <- lapply(mylist, function(x) tail(x, 2*365))
+eval10last2yeardf <- evaluateStrategy(sample(tmplist, 10), strategy = momentumStrategy, horizon = 90, cost = 1)
+```
+
+```{r}
+eval10last2yeardf %>% knitr::kable()
+```
+
+Total profitability is `r sum(eval10last2yeardf$Trading1000) %>% scales::dollar()` compared to `r sum(eval10last2yeardf$Hold1000) %>% scales::dollar()`.

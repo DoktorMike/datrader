@@ -4,7 +4,7 @@
 \alias{Strategy}
 \title{Type for Investment strategies}
 \usage{
-Strategy(invest)
+Strategy(invest, horizon = 30)
 }
 \arguments{
 \item{invest}{a function producing a vector of buying decisions.

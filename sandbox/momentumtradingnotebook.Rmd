@@ -100,3 +100,19 @@ After running this we can see that our strategy actually beats buy and hold over
 mytib %>% mutate(ImprovementIndex=100*round(Trading1000/Hold1000,2))
 ```
 
+## Trading on SP500
+
+Now we're going to load the entire SP500 stocks into our list and backtest the momentum strategy on that. So let's first load the data.
+
+```{r loadsp500data, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+library(tidyverse)
+library(datrader)
+library(datools)
+library(quantmod)
+library(ggplot2)
+library(xts)
+library(TTR)
+
+mypath <- "~/Dropbox/Datasets/matrix/finance/data/sp500/csv"
+mylist<- loadExistingInstruments(mypath)
+```
