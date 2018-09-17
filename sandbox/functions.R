@@ -6,17 +6,6 @@ library(ggplot2)
 library(xts)
 library(TTR)
 
-# Filter away stocks where one of the measurables has at least cutoff percent NA's
-filterUnwantedStocks <- function(stocks, cutoff=0.05, lastDate=Sys.Date()-1){
-  nafilter <- function(stock) max(sapply(stock, function(x) sum(is.na(x))/length(x))) < cutoff
-  datefilter <- function(stock) tail(index(stock), 1) >= lastDate
-  myfilter <- function(stock) all(nafilter(stock), datefilter(stock))
-  Filter(myfilter, stocks)
-}
-
-imputeInstruments <- function(stocks) Map(na.approx, stocks)
-
-naInstruments <- function(stocks) which(sapply(mylist, function(y) any(sapply(y, function(x) any(is.na(x))))))
 
 # Getting derivative parameters from a polynomial of the form
 # f(x) = b0+b1*x1+b2*x²+b3*x³+...+bn*x^n
