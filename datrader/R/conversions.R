@@ -80,3 +80,70 @@ imputeInstruments <- function(stocks) Map(na.approx, stocks)
 #' a<-1
 naInstruments <- function(stocks) which(sapply(mylist, function(y) any(sapply(y, function(x) any(is.na(x))))))
 
+#' Generate historical positions based on a trading strategy
+#'
+#' The trading strategy is based on a single instrument and is allowed to take
+#' multiple extra arguments.
+#'
+#' @param x the instrument to generate historical positions in
+#' @param tstrat the trading strategy to utilize which is based on a single
+#' instrument approach
+#'
+#' @return a position vector consisting of 0's and 1's for indicating in and out
+#' of position
+#' @export
+#'
+#' @examples
+#' a<-1
+generateHistoricalPositions <- function(x, tstrat) {
+  # for(i in (h+1):nrow(x)) mypos[i]<-ifelse(tstrat(x[(i-h):(i-1),])$Invest==TRUE, 1, 0)
+  # burnin <- 10
+  if(nrow(x)<2) stop("Cannot generate historical positions for timeframe shorter than 2 days.")
+  c(rep(0, 1), sapply(2:nrow(x), function(i) tstrat(x[1:(i-1),])$Invest))
+}
+
+#' Plot the historical positions
+#'
+#' This function illustrates the positions generated over time based on a
+#' trading strategy along with the price over time.
+#'
+#' @param x the instrument given as an xts object
+#' @param pos the position vector given by a trading strategy
+#'
+#' @return a ggplot object representing the plot
+#' @importFrom tibble tibble
+#' @importFrom quantmod Cl
+#' @importFrom ggplot2 ggplot geom_line facet_grid aes
+#' @importFrom tidyr gather
+#' @importFrom utils tail
+#' @export
+#'
+#' @examples
+#' library(datrader)
+#' library(readr)
+#' library(quantmod)
+#' f <- system.file("extdata", "FB.csv", package = "datrader", mustWork = TRUE)
+#' mylist <- loadExistingInstruments(gsub("/FB.csv", "", f))
+#' plotHistoricalPositions(tail(mylist$MSFT, 100), rbinom(100, 1, 0.3))
+plotHistoricalPositions<-function(x, pos) {
+  tibble::tibble(Date=as.Date(index(x)), Price=as.vector(quantmod::Cl(x)), Invest=pos) %>%
+    tidyr::gather("Key", "Value", -"Date") %>%
+    ggplot2::ggplot(ggplot2::aes(y=Value, x=Date, color=Key, group=Key)) +
+    ggplot2::geom_line() + ggplot2::facet_grid(Key~., scales = "free")
+}
+
+#' Calculate number of trades in this position vector
+#'
+#' Takes a vector of 0 and 1 and calculates how many trades are made. A
+#' transition from 0 to 1 or 1 to 0 is calculated as a trade.
+#'
+#' @param p the position vector indicating whether you are in position or out
+#'
+#' @return the number of trades made
+#' @export
+#'
+#' @examples
+#' library(datrader)
+#' numTrades(c(0,0,0,0,1,1,1,0,0))
+numTrades<-function(p) length(which(base::abs(base::diff(p))>0))
+
