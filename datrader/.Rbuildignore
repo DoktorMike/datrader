@@ -6,3 +6,5 @@
 ^\.travis\.yml$
 ^codecov\.yml$
 ^data-raw$
+^docs$
+crap.csv
