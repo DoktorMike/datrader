@@ -1,6 +1,11 @@
 language: r
 cache: packages
+r_github_packages:
+  - DoktorMike/datools
+r_packages:
+  - pkgdown
 before_install:
   - cd datrader
 after_success:
   - Rscript -e 'covr::codecov()'
+  - Rscript -e 'pkgdown::build_site(pkg = ".")'
