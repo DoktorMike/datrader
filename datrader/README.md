@@ -1,8 +1,7 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 datrader
 ========
 
-The goal of datrader is to ...
+The goal of datrader is to help people do intelligent trading.
 
 Example
 -------
