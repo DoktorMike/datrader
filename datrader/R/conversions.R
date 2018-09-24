@@ -10,7 +10,7 @@
 #' must be of class xts, to reduce
 #'
 #' @importFrom tibble as_tibble rownames_to_column
-#' @importFrom dplyr mutate full_join
+#' @importFrom dplyr mutate full_join %>%
 #'
 #' @return a long format tibble
 #' @export
@@ -25,7 +25,7 @@ instrumentListToDataFrame<-function(x){
   xtsToLong <- function(instName) {
     as.data.frame(x[[instName]]) %>% tibble::rownames_to_column("date") %>%
       tibble::as_tibble() %>% dplyr::mutate(ticker=instName) %>%
-      tidyr::gather(measure, value, -c(date, ticker))
+      tidyr::gather("measure", "value", -c("date", "ticker"))
   }
   Reduce(function(a, b) dplyr::full_join(a, b), lapply(names(x), xtsToLong))
 }

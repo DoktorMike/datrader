@@ -31,31 +31,58 @@ evaluate <- function(strategy, market){
   h
 }
 
-#' Create a portfolio from a strategy
+#' Create a portfolio from instrument picking and ranking
 #'
-#' @param strategy the investment strategy
-#' @param instruments the list of instruments to consider
-#' @param investment the total amount of money to distribute
+#' Basically this operates on a list of instruments with any history length
+#' and processes each instrument with the selectInstrument function which returns
+#' TRUE if the instrument should be invested in right now or FALSE if it should
+#' not. The second function rankInstrument should return a scalar value indicating
+#' the magnitude of how good the instrument is thought to be. Of course the metric
+#' in both of these functions could be the same but they could also differ.
+#'
+#' Both the selectInstrument and rankInstrument must operate on an xts class
+#' and take that as it's first and only mandatory argument.
+#'
+#' @param instruments the names list of instruments to consider
 #' @param topN the top N instruments to keep in a portfolio
+#' @param selectInstrument function that selects whether to invest in an
+#' instrument or not
+#' @param rankInstrument function that returns a scalar rank for an instrument
+#' higher means better
+#'
+#' @importFrom datools standardize
 #'
 #' @return the created portfolio
 #' @export
 #'
 #' @examples
-#' a<-1
-createPortfolio <- function(strategy, instruments, investment=10000, topN=50) {
+#' library(datrader)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
+#' selectInstrument <- function(x) rankInstrument(x) > 5
+#' createPortfolio(mylist, selectInstrument, rankInstrument, topN=3)
+createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=50) {
 
   # 1. Select the stocks that we wish to invest in
   myinstr <- Filter(selectInstrument, instruments)
 
   # 2. Rank the stocks that we wish to invest in decreasing order
-  myinstr <- myinstr[order(sapply(myinstr, rankInstrument), decreasing = TRUE)]
+  scores <- sapply(myinstr, rankInstrument)
+  scoreorder <- order(scores, decreasing = TRUE)
+  myinstr <- myinstr[scoreorder]
+  scores <- scores[scoreorder]
 
-  # 3. Select to N remaining stocks to invest in
-  if(topN < length(myinstr)) myinstr <- myinstr[1:topN]
+  # 3. Select the topN of remaining stocks to invest in
+  if(topN < length(myinstr)){
+    myinstr <- myinstr[1:topN]
+    scores <- scores[1:topN]
+  }
 
   # 4. Take positions in stocks and distribute X Money
-
+  sharesize <- datools::standardize(scores, 1, 10)
+  sharesize <- sharesize/sum(sharesize)
+  sharesize
 }
 
 
