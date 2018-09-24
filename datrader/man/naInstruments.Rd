@@ -4,10 +4,10 @@
 \alias{naInstruments}
 \title{Get a vector of all instruments containing NA's}
 \usage{
-naInstruments(stocks)
+naInstruments(instruments)
 }
 \arguments{
-\item{stocks}{the list of instruments to detect NA's in}
+\item{instruments}{the list of instruments to detect NA's in}
 }
 \value{
 a named vector of instruments containing NA's somewhere

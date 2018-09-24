@@ -1,6 +1,7 @@
 #' Type for Investment strategies
 #'
 #' @param invest a function producing a vector of buying decisions.
+#' @param horizon the horizon to use
 #' See details for more.
 #'
 #' @return a Strategy instantiated with investment stratey invest.
@@ -25,11 +26,6 @@ Strategy <- function(invest, horizon=30){
 #' a<-1
 buyandholdSignal<-function(stocks) rep(1, length(stocks))
 
-
-evaluate <- function(strategy, market){
-  h <- horizon(strategy)
-  h
-}
 
 #' Create a portfolio from instrument picking and ranking
 #'

@@ -7,7 +7,9 @@
 Strategy(invest, horizon = 30)
 }
 \arguments{
-\item{invest}{a function producing a vector of buying decisions.
+\item{invest}{a function producing a vector of buying decisions.}
+
+\item{horizon}{the horizon to use
 See details for more.}
 }
 \value{

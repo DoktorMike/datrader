@@ -60,10 +60,11 @@ filterUnwantedInstruments <- function(stocks, cutoff=0.05, lastDate=Sys.Date()-1
 #'
 #' @return a list of the given instruments with NA's imputed
 #' @export
+#' @importFrom zoo na.approx
 #'
 #' @examples
 #' a<-1
-imputeInstruments <- function(stocks) Map(na.approx, stocks)
+imputeInstruments <- function(stocks) Map(zoo::na.approx, stocks)
 
 
 #' Get a vector of all instruments containing NA's
@@ -71,14 +72,14 @@ imputeInstruments <- function(stocks) Map(na.approx, stocks)
 #' Utility function to quickly detect instruments in need of imputing. This
 #' covers all columns of each instrument and reacts to an NA anywhere.
 #'
-#' @param stocks the list of instruments to detect NA's in
+#' @param instruments the list of instruments to detect NA's in
 #'
 #' @return a named vector of instruments containing NA's somewhere
 #' @export
 #'
 #' @examples
 #' a<-1
-naInstruments <- function(stocks) which(sapply(mylist, function(y) any(sapply(y, function(x) any(is.na(x))))))
+naInstruments <- function(instruments) which(sapply(instruments, function(y) any(sapply(y, function(x) any(is.na(x))))))
 
 #' Generate historical positions based on a trading strategy
 #'
@@ -116,6 +117,7 @@ generateHistoricalPositions <- function(x, tstrat) {
 #' @importFrom ggplot2 ggplot geom_line facet_grid aes
 #' @importFrom tidyr gather
 #' @importFrom utils tail
+#' @importFrom stats as.formula
 #' @export
 #'
 #' @examples
@@ -128,8 +130,8 @@ generateHistoricalPositions <- function(x, tstrat) {
 plotHistoricalPositions<-function(x, pos) {
   tibble::tibble(Date=as.Date(index(x)), Price=as.vector(quantmod::Cl(x)), Invest=pos) %>%
     tidyr::gather("Key", "Value", -"Date") %>%
-    ggplot2::ggplot(ggplot2::aes(y=Value, x=Date, color=Key, group=Key)) +
-    ggplot2::geom_line() + ggplot2::facet_grid(Key~., scales = "free")
+    ggplot2::ggplot(ggplot2::aes_string(y="Value", x="Date", color="Key", group="Key")) +
+    ggplot2::geom_line() + ggplot2::facet_grid(stats::as.formula("Key~."), scales = "free")
 }
 
 #' Calculate number of trades in this position vector
