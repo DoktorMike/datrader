@@ -14,3 +14,4 @@ Imports: readr, ggplot2, tibble, tidyr, utils, datools
 Depends: xts, zoo, quantmod, dplyr
 Suggests: covr,
     testthat
+Remotes: doktormike/datrader/datrader
