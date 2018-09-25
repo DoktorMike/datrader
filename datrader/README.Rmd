@@ -37,7 +37,7 @@ selectInstrument <- function(x) rankInstrument(x) > 5
 # Create a portfolio from these functions
 myport <- createPortfolio(mylist, selectInstrument, rankInstrument, topN=3)
 qplot(x=as.factor(1), y=myport, fill=factor(names(myport))) + 
-  geom_bar(stat="identity", width = 1) + coord_polar(theta = "y") + xlab("") + 
-  ylab("") + theme_minimal() + scale_fill_discrete("Instrument") + 
-  scale_fill_brewer(type = "qual", palette = 6)
+  geom_bar(stat="identity", width = 1) + coord_polar(theta = "y") + 
+  xlab("") + ylab("") + theme_minimal() + 
+  scale_fill_brewer("Instrument", type = "qual", palette = 6)
 ```
