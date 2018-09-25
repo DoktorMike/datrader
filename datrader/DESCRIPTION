@@ -15,3 +15,4 @@ Depends: xts, zoo, quantmod, dplyr, datools
 Suggests: covr,
     testthat
 Remotes: doktormike/datools
+BugReports: https://github.com/DoktorMike/datrader/issues
