@@ -4,6 +4,7 @@ r_github_packages:
   - DoktorMike/datools
 r_packages:
   - pkgdown
+  - tidyverse
 before_install:
   - cd datrader
 after_success:
