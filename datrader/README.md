@@ -3,6 +3,29 @@ datrader
 
 The goal of datrader is to help people do intelligent trading.
 
+Fetching data
+-------------
+
+``` r
+# Load library
+library(datrader)
+library(ggplot2)
+
+# Download data into a new repository
+mypath <- '/tmp'
+mytickers <- c('FB', 'MSFT', 'NFLX')
+downloadInstruments(instruments = mytickers, path = mypath, 
+                    startDate = "2018-01-01")
+
+# Load the data
+mylist <- loadExistingInstruments(mypath)
+
+# Plot the Facebook stock
+chartSeries(mylist$FB)
+```
+
+![](README-datafetching-1.png)
+
 Building a portfolio
 --------------------
 

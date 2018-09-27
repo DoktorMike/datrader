@@ -65,6 +65,26 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#datrader" class="anchor"></a>datrader</h1></div>
 <p>The goal of datrader is to help people do intelligent trading.</p>
+<div id="fetching-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#fetching-data" class="anchor"></a>Fetching data</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load library</span>
+<span class="kw">library</span>(datrader)
+<span class="kw">library</span>(ggplot2)
+
+<span class="co"># Download data into a new repository</span>
+mypath &lt;-<span class="st"> '/tmp'</span>
+mytickers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">'FB'</span>, <span class="st">'MSFT'</span>, <span class="st">'NFLX'</span>)
+<span class="kw"><a href="reference/downloadInstruments.html">downloadInstruments</a></span>(<span class="dt">instruments =</span> mytickers, <span class="dt">path =</span> mypath, 
+                    <span class="dt">startDate =</span> <span class="st">"2018-01-01"</span>)
+
+<span class="co"># Load the data</span>
+mylist &lt;-<span class="st"> </span><span class="kw"><a href="reference/loadExistingInstruments.html">loadExistingInstruments</a></span>(mypath)
+
+<span class="co"># Plot the Facebook stock</span>
+<span class="kw">chartSeries</span>(mylist<span class="op">$</span>FB)</code></pre></div>
+<p><img src="README-datafetching-1.png" width="960"></p>
+</div>
 <div id="building-a-portfolio" class="section level2">
 <h2 class="hasAnchor">
 <a href="#building-a-portfolio" class="anchor"></a>Building a portfolio</h2>

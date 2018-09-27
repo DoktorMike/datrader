@@ -16,6 +16,26 @@ knitr::opts_chunk$set(
 
 The goal of datrader is to help people do intelligent trading.
 
+## Fetching data
+
+```{r datafetching, echo=TRUE, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Load library
+library(datrader)
+library(ggplot2)
+
+# Download data into a new repository
+mypath <- '/tmp'
+mytickers <- c('FB', 'MSFT', 'NFLX')
+downloadInstruments(instruments = mytickers, path = mypath, 
+                    startDate = "2018-01-01")
+
+# Load the data
+mylist <- loadExistingInstruments(mypath)
+
+# Plot the Facebook stock
+chartSeries(mylist$FB)
+```
+
 ## Building a portfolio
 
 This is a basic example which shows you how to create a portfolio in a market. In this setting we fake the market by only loading three instruments from the package itself namely FB, MSFT and NFLX.
