@@ -3,6 +3,16 @@ datrader
 
 The goal of datrader is to help people do intelligent trading.
 
+Installing the package
+----------------------
+
+You can install the latest bleeding version from this github repository.
+
+``` r
+library(devtools)
+devtools::install_github('doktormike/datrader/datrader')
+```
+
 Fetching data
 -------------
 

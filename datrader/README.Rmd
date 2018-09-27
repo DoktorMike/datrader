@@ -16,6 +16,15 @@ knitr::opts_chunk$set(
 
 The goal of datrader is to help people do intelligent trading.
 
+## Installing the package
+
+You can install the latest bleeding version from this github repository.
+
+```{r installing, eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(devtools)
+devtools::install_github('doktormike/datrader/datrader')
+```
+
 ## Fetching data
 
 ```{r datafetching, echo=TRUE, fig.width=10, message=FALSE, warning=FALSE, paged.print=FALSE}

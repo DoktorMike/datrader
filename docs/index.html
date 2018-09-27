@@ -65,6 +65,13 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#datrader" class="anchor"></a>datrader</h1></div>
 <p>The goal of datrader is to help people do intelligent trading.</p>
+<div id="installing-the-package" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installing-the-package" class="anchor"></a>Installing the package</h2>
+<p>You can install the latest bleeding version from this github repository.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(devtools)
+devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">'doktormike/datrader/datrader'</span>)</code></pre></div>
+</div>
 <div id="fetching-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#fetching-data" class="anchor"></a>Fetching data</h2>
@@ -96,7 +103,7 @@ mylist &lt;-<span class="st"> </span><span class="kw"><a href="reference/loadExi
 <span class="kw">library</span>(gridExtra)
 
 <span class="co"># Get data from package</span>
-mypath &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">'extdata'</span>, <span class="dt">package =</span> <span class="st">'datrader'</span>)
+mypath &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/system.file">system.file</a></span>(<span class="st">'extdata'</span>, <span class="dt">package =</span> <span class="st">'datrader'</span>)
 mylist &lt;-<span class="st"> </span><span class="kw"><a href="reference/loadExistingInstruments.html">loadExistingInstruments</a></span>(mypath)
 
 <span class="co"># Define a function for ranking an instrument and selecting it for investment</span>
