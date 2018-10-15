@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create a portfolio from instrument picking and ranking — createPortfolio • datrader</title>
+<title>Find out which instruments are active at date — getAvailableInstruments • datrader</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,14 +30,11 @@
 
 
 
-<meta property="og:title" content="Create a portfolio from instrument picking and ranking — createPortfolio" />
+<meta property="og:title" content="Find out which instruments are active at date — getAvailableInstruments" />
 
-<meta property="og:description" content="Basically this operates on a list of instruments with any history length
-and processes each instrument with the selectInstrument function which returns
-TRUE if the instrument should be invested in right now or FALSE if it should
-not. The second function rankInstrument should return a scalar value indicating
-the magnitude of how good the instrument is thought to be. Of course the metric
-in both of these functions could be the same but they could also differ." />
+<meta property="og:description" content="Looks at all instruments and writes TRUE if date is newer than the earliest
+date for each instrument. This allows us to know if a given instrument
+existed at the time of &quot;date&quot;." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -97,23 +94,20 @@ in both of these functions could be the same but they could also differ." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create a portfolio from instrument picking and ranking</h1>
+    <h1>Find out which instruments are active at date</h1>
     
-    <div class="hidden name"><code>createPortfolio.Rd</code></div>
+    <div class="hidden name"><code>getAvailableInstruments.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Basically this operates on a list of instruments with any history length
-and processes each instrument with the selectInstrument function which returns
-TRUE if the instrument should be invested in right now or FALSE if it should
-not. The second function rankInstrument should return a scalar value indicating
-the magnitude of how good the instrument is thought to be. Of course the metric
-in both of these functions could be the same but they could also differ.</p>
+    <p>Looks at all instruments and writes TRUE if date is newer than the earliest
+date for each instrument. This allows us to know if a given instrument
+existed at the time of "date".</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>createPortfolio</span>(<span class='no'>instruments</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>, <span class='kw'>topN</span> <span class='kw'>=</span> <span class='fl'>50</span>)</pre>
+    <pre class="usage"><span class='fu'>getAvailableInstruments</span>(<span class='no'>instruments</span>, <span class='no'>date</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -123,39 +117,23 @@ in both of these functions could be the same but they could also differ.</p>
       <td><p>the named list of instruments to consider</p></td>
     </tr>
     <tr>
-      <th>selectInstrument</th>
-      <td><p>function that selects whether to invest in an
-instrument or not</p></td>
-    </tr>
-    <tr>
-      <th>rankInstrument</th>
-      <td><p>function that returns a scalar rank for an instrument
-higher means better</p></td>
-    </tr>
-    <tr>
-      <th>topN</th>
-      <td><p>the top N instruments to keep in a portfolio</p></td>
+      <th>date</th>
+      <td><p>the date to use for the query</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the created portfolio</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>Both the selectInstrument and rankInstrument must operate on an xts class
-and take that as it's first and only mandatory argument.</p>
+    <p>a vector of instrument names featuring TRUE or FALSE which indicates
+whether or not they existed at the time of date.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>datrader</span>)
 <span class='no'>mypath</span> <span class='kw'>&lt;-</span> <span class='fu'>system.file</span>(<span class='st'>'extdata'</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>'datrader'</span>)
 <span class='no'>mylist</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadExistingInstruments.html'>loadExistingInstruments</a></span>(<span class='no'>mypath</span>)
-<span class='no'>rankInstrument</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>tail</span>(<span class='fu'>momentum</span>(<span class='fu'>Cl</span>(<span class='no'>x</span>), <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>90</span>), <span class='fl'>1</span>)
-<span class='no'>selectInstrument</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>rankInstrument</span>(<span class='no'>x</span>) <span class='kw'>&gt;</span> <span class='fl'>5</span>
-<span class='fu'>createPortfolio</span>(<span class='no'>mylist</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>, <span class='kw'>topN</span><span class='kw'>=</span><span class='fl'>3</span>)</div><div class='output co'>#&gt;       NFLX       MSFT 
-#&gt; 0.90909091 0.09090909 </div></pre>
+<span class='fu'>getAvailableInstruments</span>(<span class='no'>mylist</span>, <span class='fu'>Sys.Date</span>())</div><div class='output co'>#&gt;   FB MSFT NFLX 
+#&gt; TRUE TRUE TRUE </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -163,8 +141,6 @@ and take that as it's first and only mandatory argument.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
