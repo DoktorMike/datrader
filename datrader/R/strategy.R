@@ -82,8 +82,36 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
 }
 
 
-evaluateStrategy <- function(instruments) {
-    # sapply(instruments,
+#' Evaluate a strategy on a timeframe and market
+#'
+#' @param instruments the named list of instruments to consider
+#' @param dates the timeframe to operate on given as a vector of Date
+#' @param selectInstrument function that selects whether to invest in an
+#' instrument or not
+#' @param rankInstrument function that returns a scalar rank for an instrument
+#' higher means better
+#' @param investFrequency how often to reconsider the portfolio in number of days
+#'
+#' @return the performance
+#' @export
+#'
+#' @examples
+#' a<-1
+evaluateStrategy <- function(instruments,
+                             dates,
+                             selectInstrument,
+                             rankInstrument,
+                             investFrequency=30) {
+  lastDate <- max(dates)
+  date <- min(dates)
+  while (date <= lastDate) {
+    # Get all available instruments in the market at date
+    instravail <- getAvailableInstruments(instruments, date)
+    mylist <- instruments[instravail]
+
+    # Move forward in time
+    date <- date + investFrequency
+  }
 }
 
 #' Find out which instruments are active at date
