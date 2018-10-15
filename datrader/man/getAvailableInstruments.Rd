@@ -20,3 +20,9 @@ Looks at all instruments and writes TRUE if date is newer than the earliest
 date for each instrument. This allows us to know if a given instrument
 existed at the time of "date".
 }
+\examples{
+library(datrader)
+mypath <- system.file('extdata', package = 'datrader')
+mylist <- loadExistingInstruments(mypath)
+getAvailableInstruments(mylist, Sys.Date())
+}

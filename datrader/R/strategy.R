@@ -83,21 +83,21 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
 
 
 evaluateStrategy <- function(instruments) {
-    # sapply(instruments, 
+    # sapply(instruments,
 }
 
 #' Find out which instruments are active at date
-#' 
+#'
 #' Looks at all instruments and writes TRUE if date is newer than the earliest
 #' date for each instrument. This allows us to know if a given instrument
 #' existed at the time of "date".
-#' 
+#'
 #' @param instruments the named list of instruments to consider
 #' @param date the date to use for the query
 #' @return a vector of instrument names featuring TRUE or FALSE which indicates
 #' whether or not they existed at the time of date.
 #' @export
-#' @example
+#' @examples
 #' library(datrader)
 #' mypath <- system.file('extdata', package = 'datrader')
 #' mylist <- loadExistingInstruments(mypath)
