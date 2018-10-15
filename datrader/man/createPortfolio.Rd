@@ -7,7 +7,7 @@
 createPortfolio(instruments, selectInstrument, rankInstrument, topN = 50)
 }
 \arguments{
-\item{instruments}{the names list of instruments to consider}
+\item{instruments}{the named list of instruments to consider}
 
 \item{selectInstrument}{function that selects whether to invest in an
 instrument or not}
