@@ -115,7 +115,7 @@ momentumStrategy <- function(x, horizon=30, cutoff=0){
   # Calculate risk adjusted momentum using the past horizon days
   if(nrow(x) < horizon) return(list(Invest=FALSE, Strength=0))
   xhor <- tail(x, horizon)
-  m <- tail(momentum(Cl(xhor), n=horizon-1), 1)[[1]]
+  m <- tail(ROC(Cl(xhor), n=horizon-1), 1)[[1]]
   v <- tail(volatility(xhor, n=horizon), 1)[[1]]
   value <- m/v
   # If above cutoff do a trade
@@ -143,8 +143,9 @@ evaluateStrategy <- function(stocks, strategy, investment=1000, cost=10) {
     print(paste0("Doing: ", tickers[i]))
     # plotHistoricalPositions(x, mypos)
     # browser()
-    a<-b<-dailyReturn(x)[-1]; a<-a*mypos; a<-a[a>0]
+    a<-b<-dailyReturn(x, leading = FALSE)[-1]; a<-a*head(mypos, length(mypos)-1)
     mytib[i, "Name"] <- tickers[i]
+    mytib[i, "Trading"] <- numTrades(mypos)
     mytib[i, "Trading1000"] <- prod(1+a)*1000 - numTrades(mypos)*cost
     mytib[i, "Hold1000"] <- prod(1+b)*1000 - cost
 
@@ -153,3 +154,4 @@ evaluateStrategy <- function(stocks, strategy, investment=1000, cost=10) {
   }
   mytib
 }
+

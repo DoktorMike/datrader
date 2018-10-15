@@ -39,7 +39,7 @@ buyandholdSignal<-function(stocks) rep(1, length(stocks))
 #' Both the selectInstrument and rankInstrument must operate on an xts class
 #' and take that as it's first and only mandatory argument.
 #'
-#' @param instruments the names list of instruments to consider
+#' @param instruments the named list of instruments to consider
 #' @param topN the top N instruments to keep in a portfolio
 #' @param selectInstrument function that selects whether to invest in an
 #' instrument or not
@@ -81,4 +81,28 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
   sharesize
 }
 
+
+evaluateStrategy <- function(instruments) {
+    # sapply(instruments, 
+}
+
+#' Find out which instruments are active at date
+#' 
+#' Looks at all instruments and writes TRUE if date is newer than the earliest
+#' date for each instrument. This allows us to know if a given instrument
+#' existed at the time of "date".
+#' 
+#' @param instruments the named list of instruments to consider
+#' @param date the date to use for the query
+#' @return a vector of instrument names featuring TRUE or FALSE which indicates
+#' whether or not they existed at the time of date.
+#' @export
+#' @example
+#' library(datrader)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' getAvailableInstruments(mylist, Sys.Date())
+getAvailableInstruments <- function(instruments, date){
+    sapply(instruments, function(x) as.Date(date) > min(zoo::index(x)))
+}
 
