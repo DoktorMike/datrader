@@ -27,5 +27,12 @@ the performance
 Evaluate a strategy on a timeframe and market
 }
 \examples{
-a<-1
+library(datrader)
+library(quantmod)
+mypath <- system.file('extdata', package = 'datrader')
+mylist <- loadExistingInstruments(mypath)
+rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
+selectInstrument <- function(x) rankInstrument(x) > 5
+mydates <- index(tail(mylist[[1]], 100))
+evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30)
 }

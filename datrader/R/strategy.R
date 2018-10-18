@@ -96,7 +96,14 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
 #' @export
 #'
 #' @examples
-#' a<-1
+#' library(datrader)
+#' library(quantmod)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
+#' selectInstrument <- function(x) rankInstrument(x) > 5
+#' mydates <- index(tail(mylist[[1]], 100))
+#' evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30)
 evaluateStrategy <- function(instruments,
                              dates,
                              selectInstrument,
@@ -104,19 +111,64 @@ evaluateStrategy <- function(instruments,
                              investFrequency=30) {
   lastDate <- max(dates)
   date <- min(dates)
+  cash <- 10000
+  holding <- NULL
   while (date <= lastDate) {
+    browser()
     # Get all available instruments in the market at date
     instravail <- getAvailableInstruments(instruments, date)
     mylist <- instruments[instravail]
+    mylist <- lapply(mylist, function(x) x[zoo::index(x)<=as.Date(date),])
 
-    # Select top 50 instuments, rank them and convert to share of investment
+    # Select top 50 instuments, rank them and convert to a suggested holding
     shares <- createPortfolio(mylist, selectInstrument, rankInstrument, topN = 50)
-    prices <- getLastKnownQuantity(mylist, quantmod::Cl)[names(shares)]
-    holding <- sharesToHolding(shares, prices, 10000)
+    prices <- getLastKnownQuantity(mylist, quantmod::Cl)
+    fees <- getFees(instruments)
+    hnames <- names(holding)
+    snames <- names(shares)
+    moneyavail <- cash+sum(holding*prices[hnames])-sum(fees[base::union(snames, hnames)])
+    sugholding <- sharesToHolding(shares, prices[snames], moneyavail) # Make sure we can pay the fees too!
+
+    # Update our existing holding
+    snames <- names(sugholding) # Redefine snames to reflect holding which may not have been realized
+    tosell <- base::setdiff(hnames, snames)
+    tokeep <- base::intersect(hnames, snames)
+    tobuy <- base::setdiff(snames, hnames)
+
+    # Sell stuff
+    if(length(tosell)>0){
+      cash <- cash + sum(prices[tosell]*holding[tosell]-fees[tosell])
+      holding <- holding[tokeep]
+    }
+
+    # Keep stuff
+    if(length(tokeep)>0){
+      holddiff <- holding[tokeep]-sugholding[tokeep]
+      tmpnames <- names(which(holddiff>0))
+      if(length(tmpnames)>0) # Reduce holding
+        cash <- cash + sum(holddiff[tmpnames]*prices[tmpnames]-fees[tmpnames])
+      tmpnames <- names(which(holddiff<0))
+      if(length(tmpnames)>0) # Increase holding
+        cash <- cash + sum(holddiff[tmpnames]*prices[tmpnames]-fees[tmpnames])
+      holding[tokeep] <- holding[tokeep]+holddiff[tokeep]
+    }
+
+    # Buy stuff
+    if(length(tobuy)>0){
+      holding[tobuy]=sugholding[tobuy]
+      cash <- cash - sum(sugholding[tobuy]*prices[tobuy]-fees[tobuy])
+    }
+
+    # totfees <- sum(getFees(instruments[base::union(holding, sugholding)]))
+
+    # Filter away 0 holdings
+    holding <- holding[holding>0]
 
     # Move forward in time
     date <- date + investFrequency
   }
+  tmpnames <- names(holding)
+  list(Value=holding[tmpnames]*prices[tmpnames], Cash=cash)
 }
 
 #' Find out which instruments are active at date

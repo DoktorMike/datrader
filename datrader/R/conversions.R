@@ -173,3 +173,18 @@ numTrades<-function(p) length(which(base::abs(base::diff(p))>0))
 getLastKnownQuantity <- function(instruments, f = quantmod::Cl) {
   sapply(instruments, function(x) f(tail(x,1)))
 }
+
+#' Get the fees for each instrument
+#'
+#' @param instruments a list of instruments to get the transaction fees for
+#'
+#' @return a named vector of fees for the instruments
+#' @export
+#'
+#' @examples
+#' a <- 1
+getFees <- function(instruments){
+  a<-rep(1, length(instruments))
+  names(a)<-names(instruments)
+  a
+}
