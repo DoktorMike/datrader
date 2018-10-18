@@ -94,4 +94,21 @@ mydates <- index(tail(mylist[[1]], 100))
 result <- evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30, 10000)
 ```
 
-The result in this scenario for the last 100 days is 9556.260007 for an investment of 10000. Could be better.
+The result in this scenario for the last 100 days is 9556.260007 for an investment of 10000. Could be better. So let's try to do better.
+
+``` r
+library(datrader)
+library(quantmod)
+mypath <- system.file('extdata', package = 'datrader')
+mylist <- loadExistingInstruments(mypath)
+rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
+selectInstrument <- function(x) rankInstrument(x) > 5
+mydates <- index(tail(mylist[[1]], 300))
+result1 <- evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30, 10000)
+result1
+#> $Value
+#> [1] 18509.69
+#> 
+#> $Cash
+#> [1] 388.6499
+```
