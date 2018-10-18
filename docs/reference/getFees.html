@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Evaluate a strategy on a timeframe and market — evaluateStrategy • datrader</title>
+<title>Get the fees for each instrument — getFees • datrader</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Evaluate a strategy on a timeframe and market — evaluateStrategy" />
+<meta property="og:title" content="Get the fees for each instrument — getFees" />
 
-<meta property="og:description" content="Evaluate a strategy on a timeframe and market" />
+<meta property="og:description" content="Get the fees for each instrument" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -92,70 +92,35 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Evaluate a strategy on a timeframe and market</h1>
+    <h1>Get the fees for each instrument</h1>
     
-    <div class="hidden name"><code>evaluateStrategy.Rd</code></div>
+    <div class="hidden name"><code>getFees.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Evaluate a strategy on a timeframe and market</p>
+    <p>Get the fees for each instrument</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>evaluateStrategy</span>(<span class='no'>instruments</span>, <span class='no'>dates</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>,
-  <span class='kw'>investFrequency</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>cash</span> <span class='kw'>=</span> <span class='fl'>10000</span>)</pre>
+    <pre class="usage"><span class='fu'>getFees</span>(<span class='no'>instruments</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>instruments</th>
-      <td><p>the named list of instruments to consider</p></td>
-    </tr>
-    <tr>
-      <th>dates</th>
-      <td><p>the timeframe to operate on given as a vector of Date</p></td>
-    </tr>
-    <tr>
-      <th>selectInstrument</th>
-      <td><p>function that selects whether to invest in an
-instrument or not</p></td>
-    </tr>
-    <tr>
-      <th>rankInstrument</th>
-      <td><p>function that returns a scalar rank for an instrument
-higher means better</p></td>
-    </tr>
-    <tr>
-      <th>investFrequency</th>
-      <td><p>how often to reconsider the portfolio in number of days</p></td>
-    </tr>
-    <tr>
-      <th>cash</th>
-      <td><p>total amount of money to invest</p></td>
+      <td><p>a list of instruments to get the transaction fees for</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>the performance</p>
+    <p>a named vector of fees for the instruments</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>library</span>(<span class='no'>datrader</span>)
-<span class='fu'>library</span>(<span class='no'>quantmod</span>)
-<span class='no'>mypath</span> <span class='kw'>&lt;-</span> <span class='fu'>system.file</span>(<span class='st'>'extdata'</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>'datrader'</span>)
-<span class='no'>mylist</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadExistingInstruments.html'>loadExistingInstruments</a></span>(<span class='no'>mypath</span>)
-<span class='no'>rankInstrument</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>tail</span>(<span class='fu'>momentum</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/quantmod/topics/OHLC.Transformations'>Cl</a></span>(<span class='no'>x</span>), <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>90</span>), <span class='fl'>1</span>)
-<span class='no'>selectInstrument</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>rankInstrument</span>(<span class='no'>x</span>) <span class='kw'>&gt;</span> <span class='fl'>5</span>
-<span class='no'>mydates</span> <span class='kw'>&lt;-</span> <span class='fu'>index</span>(<span class='fu'>tail</span>(<span class='no'>mylist</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='fl'>100</span>))
-<span class='fu'>evaluateStrategy</span>(<span class='no'>mylist</span>, <span class='no'>mydates</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>, <span class='fl'>30</span>)</div><div class='output co'>#&gt; $Value
-#&gt; [1] 9556.26
-#&gt; 
-#&gt; $Cash
-#&gt; [1] 225.4203
-#&gt; </div></pre>
+    <pre class="examples"><div class='input'><span class='no'>a</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

@@ -77,3 +77,21 @@ grid.arrange(p2, p1, ncol=2)
 ![](README-portfoliocreation-1.png)
 
 As you can see in the plot this small example focuses on investing in MSFT and NFLX since there has been very low momentum in FB.
+
+Evaluating a strategy
+---------------------
+
+We also would like to evaluate a strategy to see how much money it can make us over time. For this purpose the function evaluateStrategy exists. The first example shows a simple strategy which allows us to update our portfolio once every month.
+
+``` r
+library(datrader)
+library(quantmod)
+mypath <- system.file('extdata', package = 'datrader')
+mylist <- loadExistingInstruments(mypath)
+rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
+selectInstrument <- function(x) rankInstrument(x) > 5
+mydates <- index(tail(mylist[[1]], 100))
+result <- evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30, 10000)
+```
+
+The result in this scenario for the last 100 days is 9556.260007 for an investment of 10000. Could be better.
