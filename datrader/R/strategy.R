@@ -91,6 +91,7 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
 #' @param rankInstrument function that returns a scalar rank for an instrument
 #' higher means better
 #' @param investFrequency how often to reconsider the portfolio in number of days
+#' @param cash total amount of money to invest
 #'
 #' @return the performance
 #' @export
@@ -108,13 +109,14 @@ evaluateStrategy <- function(instruments,
                              dates,
                              selectInstrument,
                              rankInstrument,
-                             investFrequency=30) {
+                             investFrequency=30,
+                             cash=10000) {
   lastDate <- max(dates)
   date <- min(dates)
-  cash <- 10000
+  cash <- cash
   holding <- NULL
   while (date <= lastDate) {
-    browser()
+    # browser()
     # Get all available instruments in the market at date
     instravail <- getAvailableInstruments(instruments, date)
     mylist <- instruments[instravail]
@@ -150,7 +152,7 @@ evaluateStrategy <- function(instruments,
       tmpnames <- names(which(holddiff<0))
       if(length(tmpnames)>0) # Increase holding
         cash <- cash + sum(holddiff[tmpnames]*prices[tmpnames]-fees[tmpnames])
-      holding[tokeep] <- holding[tokeep]+holddiff[tokeep]
+      holding[tokeep] <- holding[tokeep]-holddiff[tokeep]
     }
 
     # Buy stuff
@@ -168,7 +170,7 @@ evaluateStrategy <- function(instruments,
     date <- date + investFrequency
   }
   tmpnames <- names(holding)
-  list(Value=holding[tmpnames]*prices[tmpnames], Cash=cash)
+  list(Value=sum(holding[tmpnames]*prices[tmpnames]), Cash=cash)
 }
 
 #' Find out which instruments are active at date

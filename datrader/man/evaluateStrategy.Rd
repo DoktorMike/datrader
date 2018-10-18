@@ -5,7 +5,7 @@
 \title{Evaluate a strategy on a timeframe and market}
 \usage{
 evaluateStrategy(instruments, dates, selectInstrument, rankInstrument,
-  investFrequency = 30)
+  investFrequency = 30, cash = 10000)
 }
 \arguments{
 \item{instruments}{the named list of instruments to consider}
@@ -19,6 +19,8 @@ instrument or not}
 higher means better}
 
 \item{investFrequency}{how often to reconsider the portfolio in number of days}
+
+\item{cash}{total amount of money to invest}
 }
 \value{
 the performance
