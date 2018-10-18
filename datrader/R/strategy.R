@@ -109,6 +109,11 @@ evaluateStrategy <- function(instruments,
     instravail <- getAvailableInstruments(instruments, date)
     mylist <- instruments[instravail]
 
+    # Select top 50 instuments, rank them and convert to share of investment
+    shares <- createPortfolio(mylist, selectInstrument, rankInstrument, topN = 50)
+    prices <- getLastKnownQuantity(mylist, quantmod::Cl)[names(shares)]
+    holding <- sharesToHolding(shares, prices, 10000)
+
     # Move forward in time
     date <- date + investFrequency
   }
@@ -134,3 +139,26 @@ getAvailableInstruments <- function(instruments, date){
     sapply(instruments, function(x) as.Date(date) > min(zoo::index(x)))
 }
 
+#' Convert share of investment to actual holding
+#'
+#' @param shares the shares given as percentage for each instrument
+#' @param prices the price given as a real number for each instrument
+#' @param net the total amount of money that can be invested
+#'
+#' @return the holdings as a integer quantity for each instrument
+#' @export
+#'
+#' @examples
+#' library(datrader)
+#' library(quantmod)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
+#' selectInstrument <- function(x) rankInstrument(x) > 5
+#' shares <- createPortfolio(mylist, selectInstrument, rankInstrument, topN=3)
+#' prices <- getLastKnownQuantity(mylist, quantmod::Cl)[names(shares)]
+#' sharesToHolding(shares, prices, 10000)
+sharesToHolding <- function(shares, prices, net) {
+  n <- sapply(1:length(shares), function(x) trunc(net*shares[x]/prices[x]))
+  n
+}

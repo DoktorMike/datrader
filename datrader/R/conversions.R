@@ -149,3 +149,27 @@ plotHistoricalPositions<-function(x, pos) {
 #' numTrades(c(0,0,0,0,1,1,1,0,0))
 numTrades<-function(p) length(which(base::abs(base::diff(p))>0))
 
+#' Get the last known quantity from a list of instruments
+#'
+#' Takes a list of instruments and applies the function f to the last known
+#' observation for each instrument.
+#'
+#' @param instruments the list of instruments to operate on
+#' @param f the function that extracts the quantity we would like which defaults
+#' to the closing price.
+#' @importFrom quantmod Cl
+#'
+#' @return a named vector of the last observed quantity for each instrument
+#' @export
+#'
+#' @examples
+#' library(datrader)
+#' library(quantmod)
+#' library(zoo)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' getLastKnownQuantity(mylist, quantmod::Cl)
+#' #' getLastKnownQuantity(mylist, zoo::index)
+getLastKnownQuantity <- function(instruments, f = quantmod::Cl) {
+  sapply(instruments, function(x) f(tail(x,1)))
+}
