@@ -1,7 +1,7 @@
 Package: datrader
 Type: Package
 Title: Allow People To Do Intelligent Trading
-Version: 0.0.9
+Version: 0.1.0
 Authors@R: person("Michael", "Green", email = "micke.green@gmail.com",
                   role = c("aut", "cre"))
 Description: This package is a collection of useful routines to select, evaluate
