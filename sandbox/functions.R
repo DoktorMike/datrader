@@ -131,7 +131,7 @@ momentumStrategy180d <- function(x, cutoff=0.5) momentumStrategy(x, horizon = 18
 # x<-mylist$NFLX; h<-60; res<-trend3Strategy(x, h); chartSeries(tail(x, h)); plotPrediction2(res$Model, interval = "pred"); polyTurnpoints(coef(res$Model)); res$Invest
 
 # Test
-evaluateStrategy <- function(stocks, strategy, investment=1000, cost=10) {
+evaluateSingleStrategy <- function(stocks, strategy, investment=1000, cost=10) {
   tickers <- names(stocks)
   mytib<-data.frame(Name=as.character(length(tickers)),
                     Trading=as.numeric(length(tickers)),

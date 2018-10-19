@@ -4,19 +4,15 @@
 \alias{evaluateStrategy}
 \title{Evaluate a strategy on a timeframe and market}
 \usage{
-evaluateStrategy(instruments, dates, selectInstrument, rankInstrument,
-  investFrequency = 30, cash = 10000)
+evaluateStrategy(instruments, dates, strategy, investFrequency = 30,
+  cash = 10000)
 }
 \arguments{
 \item{instruments}{the named list of instruments to consider}
 
 \item{dates}{the timeframe to operate on given as a vector of Date}
 
-\item{selectInstrument}{function that selects whether to invest in an
-instrument or not}
-
-\item{rankInstrument}{function that returns a scalar rank for an instrument
-higher means better}
+\item{strategy}{the strategy to evaluate}
 
 \item{investFrequency}{how often to reconsider the portfolio in number of days}
 
@@ -36,5 +32,6 @@ mylist <- loadExistingInstruments(mypath)
 rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
 selectInstrument <- function(x) rankInstrument(x) > 5
 mydates <- index(tail(mylist[[1]], 100))
-evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30)
+mystrat <- function(x) createPortfolio(x, selectInstrument, rankInstrument, 10)
+evaluateStrategy(mylist, mydates, mystrat, 30)
 }

@@ -103,8 +103,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>evaluateStrategy</span>(<span class='no'>instruments</span>, <span class='no'>dates</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>,
-  <span class='kw'>investFrequency</span> <span class='kw'>=</span> <span class='fl'>30</span>, <span class='kw'>cash</span> <span class='kw'>=</span> <span class='fl'>10000</span>)</pre>
+    <pre class="usage"><span class='fu'>evaluateStrategy</span>(<span class='no'>instruments</span>, <span class='no'>dates</span>, <span class='no'>strategy</span>, <span class='kw'>investFrequency</span> <span class='kw'>=</span> <span class='fl'>30</span>,
+  <span class='kw'>cash</span> <span class='kw'>=</span> <span class='fl'>10000</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -118,14 +118,8 @@
       <td><p>the timeframe to operate on given as a vector of Date</p></td>
     </tr>
     <tr>
-      <th>selectInstrument</th>
-      <td><p>function that selects whether to invest in an
-instrument or not</p></td>
-    </tr>
-    <tr>
-      <th>rankInstrument</th>
-      <td><p>function that returns a scalar rank for an instrument
-higher means better</p></td>
+      <th>strategy</th>
+      <td><p>the strategy to evaluate</p></td>
     </tr>
     <tr>
       <th>investFrequency</th>
@@ -150,7 +144,8 @@ higher means better</p></td>
 <span class='no'>rankInstrument</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>tail</span>(<span class='fu'>momentum</span>(<span class='fu'><a href='http://www.rdocumentation.org/packages/quantmod/topics/OHLC.Transformations'>Cl</a></span>(<span class='no'>x</span>), <span class='kw'>n</span><span class='kw'>=</span><span class='fl'>90</span>), <span class='fl'>1</span>)
 <span class='no'>selectInstrument</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'>rankInstrument</span>(<span class='no'>x</span>) <span class='kw'>&gt;</span> <span class='fl'>5</span>
 <span class='no'>mydates</span> <span class='kw'>&lt;-</span> <span class='fu'>index</span>(<span class='fu'>tail</span>(<span class='no'>mylist</span><span class='kw'>[[</span><span class='fl'>1</span>]], <span class='fl'>100</span>))
-<span class='fu'>evaluateStrategy</span>(<span class='no'>mylist</span>, <span class='no'>mydates</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>, <span class='fl'>30</span>)</div><div class='output co'>#&gt; $Value
+<span class='no'>mystrat</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>x</span>) <span class='fu'><a href='createPortfolio.html'>createPortfolio</a></span>(<span class='no'>x</span>, <span class='no'>selectInstrument</span>, <span class='no'>rankInstrument</span>, <span class='fl'>10</span>)
+<span class='fu'>evaluateStrategy</span>(<span class='no'>mylist</span>, <span class='no'>mydates</span>, <span class='no'>mystrat</span>, <span class='fl'>30</span>)</div><div class='output co'>#&gt; $Value
 #&gt; [1] 9556.26
 #&gt; 
 #&gt; $Cash

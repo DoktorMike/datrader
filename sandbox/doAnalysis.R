@@ -11,7 +11,7 @@ source('sandbox/functions.R')
 mypath <- '/home/michael/Dropbox/Development/trading'
 mypath <- "~/Dropbox/Datasets/matrix/finance/data/sp500/csv"
 mylist <- loadExistingInstruments(mypath)
-mylist <- filterUnwantedInstruments(mylist, lastDate = as.Date("2018-09-01"))
+mylist <- filterUnwantedInstruments(mylist, lastDate = as.Date("2018-10-17"))
 mylist <- imputeInstruments(mylist)
 
 
@@ -20,28 +20,28 @@ chartSeries(mylist$MSFT, TA="addMomentum(n=90);addVolatility(n=90);addVo()")
 
 
 # Random 10 stock full period
-eval30allyearsdf <- evaluateStrategy(sample(mylist, 30),
+eval30allyearsdf <- evaluateSingleStrategy(sample(mylist, 30),
                                      strategy = function(x) momentumStrategy(x, 90, 0.05),
                                      cost = 1)
 
 # Random 10 stocks last year
 tmplist <- lapply(mylist, function(x) tail(x, 365))
-eval10lastyeardf <- evaluateStrategy(sample(tmplist, 10), strategy = momentumStrategy90d, cost = 1)
+eval10lastyeardf <- evaluateSingleStrategy(sample(tmplist, 10), strategy = momentumStrategy90d, cost = 1)
 
 # Random 10 stocks last 2 years
 tmplist <- lapply(mylist, function(x) tail(x, 2*365))
-eval10last2yeardf <- evaluateStrategy(sample(tmplist, 10), strategy = momentumStrategy90d, cost = 1)
+eval10last2yeardf <- evaluateSingleStrategy(sample(tmplist, 10), strategy = momentumStrategy90d, cost = 1)
 
 tmplist <- lapply(mylist, function(x) tail(x, 10*365))
-eval10last10yeardf <- evaluateStrategy(sample(tmplist, 10), strategy = momentumStrategy180d, cost = 1)
+eval10last10yeardf <- evaluateSingleStrategy(sample(tmplist, 10), strategy = momentumStrategy180d, cost = 1)
 
-evalallyearsdf <- evaluateStrategy(mylist,
+evalallyearsdf <- evaluateSingleStrategy(mylist,
                                    strategy = function(x) momentumStrategy(x, 30, 0.0),
                                    cost = 1)
 
 
 lapply(mylist[c('MSFT', 'NFLX')], function(x) tail(x, 365)) %>%
-  evaluateStrategy(strategy = function(x) momentumStrategy(x, 90, 0.05), cost = 10)
+  evaluateSingleStrategy(strategy = function(x) momentumStrategy(x, 90, 0.05), cost = 10)
 
 tmpinst <- tail(mylist$MSFT, 365); plotHistoricalPositions(tmpinst, generateHistoricalPositions(tmpinst, function(x) momentumStrategy(x, 90, 0.05)))
 

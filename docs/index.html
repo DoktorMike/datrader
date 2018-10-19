@@ -139,8 +139,9 @@ mypath &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocum
 mylist &lt;-<span class="st"> </span><span class="kw"><a href="reference/loadExistingInstruments.html">loadExistingInstruments</a></span>(mypath)
 rankInstrument &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">tail</span>(<span class="kw">momentum</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/quantmod/topics/OHLC.Transformations">Cl</a></span>(x), <span class="dt">n=</span><span class="dv">90</span>), <span class="dv">1</span>)
 selectInstrument &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">rankInstrument</span>(x) <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>
+mystrat &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw"><a href="reference/createPortfolio.html">createPortfolio</a></span>(x, selectInstrument, rankInstrument, <span class="dv">50</span>)
 mydates &lt;-<span class="st"> </span><span class="kw">index</span>(<span class="kw">tail</span>(mylist[[<span class="dv">1</span>]], <span class="dv">100</span>))
-result &lt;-<span class="st"> </span><span class="kw"><a href="reference/evaluateStrategy.html">evaluateStrategy</a></span>(mylist, mydates, selectInstrument, rankInstrument, <span class="dv">30</span>, <span class="dv">10000</span>)</code></pre></div>
+result &lt;-<span class="st"> </span><span class="kw"><a href="reference/evaluateStrategy.html">evaluateStrategy</a></span>(mylist, mydates, mystrat, <span class="dv">30</span>, <span class="dv">10000</span>)</code></pre></div>
 <p>The result in this scenario for the last 100 days is 9556.260007 for an investment of 10000. Could be better. So let’s try to do better.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(datrader)
 <span class="kw">library</span>(quantmod)
@@ -148,8 +149,9 @@ mypath &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocum
 mylist &lt;-<span class="st"> </span><span class="kw"><a href="reference/loadExistingInstruments.html">loadExistingInstruments</a></span>(mypath)
 rankInstrument &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">tail</span>(<span class="kw">momentum</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/quantmod/topics/OHLC.Transformations">Cl</a></span>(x), <span class="dt">n=</span><span class="dv">90</span>), <span class="dv">1</span>)
 selectInstrument &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">rankInstrument</span>(x) <span class="op">&gt;</span><span class="st"> </span><span class="dv">5</span>
+mystrat &lt;-<span class="st"> </span><span class="cf">function</span>(x) <span class="kw"><a href="reference/createPortfolio.html">createPortfolio</a></span>(x, selectInstrument, rankInstrument, <span class="dv">50</span>)
 mydates &lt;-<span class="st"> </span><span class="kw">index</span>(<span class="kw">tail</span>(mylist[[<span class="dv">1</span>]], <span class="dv">300</span>))
-result1 &lt;-<span class="st"> </span><span class="kw"><a href="reference/evaluateStrategy.html">evaluateStrategy</a></span>(mylist, mydates, selectInstrument, rankInstrument, <span class="dv">30</span>, <span class="dv">10000</span>)
+result1 &lt;-<span class="st"> </span><span class="kw"><a href="reference/evaluateStrategy.html">evaluateStrategy</a></span>(mylist, mydates, mystrat, <span class="dv">30</span>, <span class="dv">10000</span>)
 result1
 <span class="co">#&gt; $Value</span>
 <span class="co">#&gt; [1] 18509.69</span>

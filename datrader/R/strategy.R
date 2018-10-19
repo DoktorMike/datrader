@@ -86,10 +86,7 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
 #'
 #' @param instruments the named list of instruments to consider
 #' @param dates the timeframe to operate on given as a vector of Date
-#' @param selectInstrument function that selects whether to invest in an
-#' instrument or not
-#' @param rankInstrument function that returns a scalar rank for an instrument
-#' higher means better
+#' @param strategy the strategy to evaluate
 #' @param investFrequency how often to reconsider the portfolio in number of days
 #' @param cash total amount of money to invest
 #'
@@ -104,18 +101,20 @@ createPortfolio <- function(instruments, selectInstrument, rankInstrument, topN=
 #' rankInstrument <- function(x) tail(momentum(Cl(x), n=90), 1)
 #' selectInstrument <- function(x) rankInstrument(x) > 5
 #' mydates <- index(tail(mylist[[1]], 100))
-#' evaluateStrategy(mylist, mydates, selectInstrument, rankInstrument, 30)
+#' mystrat <- function(x) createPortfolio(x, selectInstrument, rankInstrument, 10)
+#' evaluateStrategy(mylist, mydates, mystrat, 30)
 evaluateStrategy <- function(instruments,
                              dates,
-                             selectInstrument,
-                             rankInstrument,
+                             strategy,
                              investFrequency=30,
                              cash=10000) {
   lastDate <- max(dates)
   date <- min(dates)
   cash <- cash
   holding <- NULL
+  p <- progress_estimated(trunc(as.integer(lastDate-date)/investFrequency)+1)
   while (date <= lastDate) {
+    p$tick()$print()
     # browser()
     # Get all available instruments in the market at date
     instravail <- getAvailableInstruments(instruments, date)
@@ -123,7 +122,8 @@ evaluateStrategy <- function(instruments,
     mylist <- lapply(mylist, function(x) x[zoo::index(x)<=as.Date(date),])
 
     # Select top 50 instuments, rank them and convert to a suggested holding
-    shares <- createPortfolio(mylist, selectInstrument, rankInstrument, topN = 50)
+    # shares <- createPortfolio(mylist, selectInstrument, rankInstrument, topN = 50)
+    shares <- strategy(mylist)
     prices <- getLastKnownQuantity(mylist, quantmod::Cl)
     fees <- getFees(instruments)
     hnames <- names(holding)
