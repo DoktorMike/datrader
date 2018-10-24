@@ -119,6 +119,10 @@ evaluateStrategy <- function(instruments,
     # Get all available instruments in the market at date
     instravail <- getAvailableInstruments(instruments, date)
     mylist <- instruments[instravail]
+    # if(length(mylist) < 1) {
+      # date <- date + investFrequency
+      # next
+    # }
     mylist <- lapply(mylist, function(x) x[zoo::index(x)<=as.Date(date),])
 
     # Select top 50 instuments, rank them and convert to a suggested holding
