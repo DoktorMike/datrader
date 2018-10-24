@@ -41,7 +41,7 @@ for(i in 1:nrow(resultdf)){
   selectInstrument <- function(x) rankInstrument(x)/myvol(x) > resultdf$Cutoff[i]
   mystrat <- function(x) createPortfolio(x, selectInstrument, rankInstrument, resultdf$TopN[i])
   mydates <- seq(resultdf$FromDate[i], resultdf$ToDate[i], by="1 day")
-  browser()
+  # browser()
   res <- evaluateStrategy(mylist, mydates, mystrat, resultdf$TradeFreq[i], resultdf$Investment[i])
   resultdf$Value[i]<-res$Value
   resultdf$Cash[i]<-res$Cash
