@@ -108,26 +108,28 @@ evaluateStrategy <- function(instruments,
                              strategy,
                              investFrequency=30,
                              cash=10000) {
-  lastDate <- max(dates)
-  date <- min(dates)
+  dates <- sort(dates)
+  dateIndex <- 1
   cash <- cash
   holding <- NULL
-  p <- progress_estimated(trunc(as.integer(lastDate-date)/investFrequency)+1)
-  while (date <= lastDate) {
+  p <- progress_estimated(trunc(length(dates)/investFrequency)+1)
+  while (dateIndex <= length(dates)) {
+    # if(dateIndex > trunc(length(dates)/investFrequency)+1) browser()
     p$tick()$print()
     # browser()
     # Get all available instruments in the market at date
+    date <- dates[dateIndex]
     instravail <- getAvailableInstruments(instruments, date)
     mylist <- instruments[instravail]
-    # if(length(mylist) < 1) {
-      # date <- date + investFrequency
-      # next
-    # }
     mylist <- lapply(mylist, function(x) x[zoo::index(x)<=as.Date(date),])
 
     # Select top 50 instuments, rank them and convert to a suggested holding
     # shares <- createPortfolio(mylist, selectInstrument, rankInstrument, topN = 50)
-    shares <- strategy(mylist)
+    shares <- tryCatch(strategy(mylist), error = function(e) -1)
+    if(all(shares == -1)){
+      dateIndex <- dateIndex + investFrequency
+      next
+    }
     prices <- getLastKnownQuantity(mylist, quantmod::Cl)
     fees <- getFees(instruments)
     hnames <- names(holding)
@@ -171,7 +173,7 @@ evaluateStrategy <- function(instruments,
     holding <- holding[holding>0]
 
     # Move forward in time
-    date <- date + investFrequency
+    dateIndex <- dateIndex + investFrequency
   }
   tmpnames <- names(holding)
   list(Value=sum(holding[tmpnames]*prices[tmpnames]), Cash=cash)
@@ -195,6 +197,29 @@ evaluateStrategy <- function(instruments,
 #' getAvailableInstruments(mylist, Sys.Date())
 getAvailableInstruments <- function(instruments, date){
     sapply(instruments, function(x) as.Date(date) > min(zoo::index(x)))
+}
+
+#' Extract a vector of historical tradable dates
+#'
+#' A union of all the traded dates within the list of instruments is returned.
+#' The use case is of course to not try to evaluate a date which has never been
+#' traded on e.g. a weekend.
+#'
+#' @param instruments the list of instruments to operate on
+#'
+#' @return a vector of dates where trades happen in one or several instruments
+#' @export
+#'
+#' @examples
+#' a<-1
+extractTradableDates <- function(instruments) {
+  base::as.Date(Reduce(
+    function(x, y)
+      base::union(x, y),
+    lapply(instruments, function(x)
+      zoo::index(x))
+  ),
+  origin = "1970-01-01")
 }
 
 #' Convert share of investment to actual holding
