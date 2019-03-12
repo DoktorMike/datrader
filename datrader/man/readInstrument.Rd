@@ -18,7 +18,7 @@ This is also how your resulting tibble will be organized. No other
 formats are supported.
 }
 \details{
-"Index","open","high","low","close","volume","adj."
+"Index","open","high","low","close","volume","adjusted"
 "1999-11-18",32.546494,35.765381,28.612303,31.473534,62546300,27.494957
 "1999-11-19",30.71352,30.758226,28.478184,28.880543,15234100,25.229753
 "1999-11-22",29.551144,31.473534,28.657009,31.473534,6577800,27.494957

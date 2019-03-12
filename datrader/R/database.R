@@ -26,7 +26,7 @@ downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
     p$tick()$print()
     tryCatch({
       tmpdf<-getSymbols(Symbols = i, src = "yahoo", from = startDate, auto.assign = FALSE);
-      colnames(tmpdf)<- c("open","high","low","close","volume","adj.");
+      colnames(tmpdf)<- c("open","high","low","close","volume","adjusted");
       # print(paste(path,"/", i,".csv",sep=""));
       options(scipen = 999);
       write.zoo(tmpdf, paste(path,"/", i,".csv",sep=""), sep=",",row.names=FALSE);
@@ -55,7 +55,7 @@ downloadInstruments<-function(instruments, path, startDate="2000-01-01"){
 #' \dontrun{updateInstruments("/somewhere/trading")}
 updateInstruments<-function(path, startDate=Sys.Date()-60){
   theFiles <- list.files(path=path, pattern=".csv")
-  selCols <- c("open","high","low","close","volume","adj.")
+  selCols <- c("open","high","low","close","volume","adjusted")
   for (i in theFiles){
     tryCatch({
       data <- readInstrument(paste(path,"/",i,sep=""))
@@ -95,7 +95,7 @@ updateInstruments<-function(path, startDate=Sys.Date()-60){
 #' \dontrun{updateInstruments("/somewhere/trading")}
 findLastDateInInstruments<-function(path){
   theFiles <- list.files(path=path, pattern=".csv")
-  selCols <- c("open","high","low","close","volume","adj.")
+  selCols <- c("open","high","low","close","volume","adjusted")
   oldestLastHistoricalDate <- Sys.Date()
   p <- progress_estimated(length(theFiles))
   for (i in theFiles){
@@ -127,7 +127,7 @@ findLastDateInInstruments<-function(path){
 loadExistingInstruments<-function(path){
   if(!dir.exists(paths = path)) stop("That directory does not exist!")
   theFiles <- list.files(path=path, pattern=".csv")
-  selCols <- c("open","high","low","close","volume","adj.")
+  selCols <- c("open","high","low","close","volume","adjusted")
   instrumentslist<-list()
   p <- progress_estimated(length(theFiles))
   for (i in theFiles){
@@ -148,7 +148,7 @@ loadExistingInstruments<-function(path){
 #' This is also how your resulting tibble will be organized. No other
 #' formats are supported.
 #'
-#' "Index","open","high","low","close","volume","adj."
+#' "Index","open","high","low","close","volume","adjusted"
 #' "1999-11-18",32.546494,35.765381,28.612303,31.473534,62546300,27.494957
 #' "1999-11-19",30.71352,30.758226,28.478184,28.880543,15234100,25.229753
 #' "1999-11-22",29.551144,31.473534,28.657009,31.473534,6577800,27.494957
@@ -171,6 +171,6 @@ readInstrument <- function(fname) {
                                            low = readr::col_double(),
                                            close = readr::col_double(),
                                            volume = readr::col_integer(),
-                                           adj. = readr::col_double()))
+                                           adjusted = readr::col_double()))
   data
 }
