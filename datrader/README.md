@@ -95,7 +95,7 @@ mydates <- index(tail(mylist[[1]], 100))
 result <- evaluateStrategy(mylist, mydates, mystrat, 30, 10000)
 ```
 
-The result in this scenario for the last 100 days is 9556.260007 for an investment of 10000. Could be better. So let's try to do better.
+The result in this scenario for the last 100 days is 1.0151410^{4} for an investment of 10000. Could be better. So let's try to do better.
 
 ``` r
 library(datrader)
@@ -109,8 +109,8 @@ mydates <- index(tail(mylist[[1]], 300))
 result1 <- evaluateStrategy(mylist, mydates, mystrat, 30, 10000)
 result1
 #> $Value
-#> [1] 18509.69
+#> [1] 19599.98
 #> 
 #> $Cash
-#> [1] 388.6499
+#> [1] 362.7203
 ```

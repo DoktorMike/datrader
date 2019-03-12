@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate historical positions based on a trading strategy — generateHistoricalPositions • datrader</title>
+<title>Cluster a list of stocks into groups — clusterStocks • datrader</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,12 @@
 
 
 
-<meta property="og:title" content="Generate historical positions based on a trading strategy — generateHistoricalPositions" />
+<meta property="og:title" content="Cluster a list of stocks into groups — clusterStocks" />
 
-<meta property="og:description" content="The trading strategy is based on a single instrument and is allowed to take
-multiple extra arguments." />
+<meta property="og:description" content="The function clusters stocks into k groups based on a horizon. It
+uses k-means clustering on the first PCA component of each stock where
+Open, High, Low, Close, Adjusted and Volume goes into the PCA. As such
+this clustering should take all sorts of variation into account." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -95,42 +97,51 @@ multiple extra arguments." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate historical positions based on a trading strategy</h1>
+    <h1>Cluster a list of stocks into groups</h1>
     
-    <div class="hidden name"><code>generateHistoricalPositions.Rd</code></div>
+    <div class="hidden name"><code>clusterStocks.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>The trading strategy is based on a single instrument and is allowed to take
-multiple extra arguments.</p>
+    <p>The function clusters stocks into k groups based on a horizon. It
+uses k-means clustering on the first PCA component of each stock where
+Open, High, Low, Close, Adjusted and Volume goes into the PCA. As such
+this clustering should take all sorts of variation into account.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>generateHistoricalPositions</span>(<span class='no'>x</span>, <span class='no'>tstrat</span>)</pre>
+    <pre class="usage"><span class='fu'>clusterStocks</span>(<span class='no'>stocks</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>horizon</span> <span class='kw'>=</span> <span class='fl'>90</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>the instrument to generate historical positions in</p></td>
+      <th>stocks</th>
+      <td><p>the list of stocks to operate on typically list of xts objects</p></td>
     </tr>
     <tr>
-      <th>tstrat</th>
-      <td><p>the trading strategy to utilize which is based on a single
-instrument approach</p></td>
+      <th>k</th>
+      <td><p>the number of groups to use which defaults to 10</p></td>
+    </tr>
+    <tr>
+      <th>horizon</th>
+      <td><p>the number of trading days to use for the clustering</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a position vector consisting of 0's and 1's for indicating in and out
-of position</p>
+    <p>a named class vector</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>a</span><span class='kw'>&lt;-</span><span class='fl'>1</span></div></pre>
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>datrader</span>)
+<span class='no'>mypath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/system.file'>system.file</a></span>(<span class='st'>'extdata'</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>'datrader'</span>)
+<span class='no'>mylist</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadExistingInstruments.html'>loadExistingInstruments</a></span>(<span class='no'>mypath</span>)
+<span class='fu'><a href='getAvailableInstruments.html'>getAvailableInstruments</a></span>(<span class='no'>mylist</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Sys.time'>Sys.Date</a></span>())</div><div class='output co'>#&gt;   FB MSFT NFLX 
+#&gt; TRUE TRUE TRUE </div><div class='input'><span class='fu'>clusterStocks</span>(<span class='no'>mylist</span>, <span class='kw'>k</span><span class='kw'>=</span><span class='fl'>2</span>, <span class='kw'>horizon</span><span class='kw'>=</span><span class='fl'>10</span>)</div><div class='output co'>#&gt;   FB MSFT NFLX 
+#&gt;    1    2    2 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
