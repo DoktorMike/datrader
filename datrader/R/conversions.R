@@ -30,6 +30,49 @@ instrumentListToDataFrame<-function(x){
   Reduce(function(a, b) dplyr::full_join(a, b), lapply(names(x), xtsToLong))
 }
 
+#' Reduce a list of instruments to a single tibble of f
+#'
+#' Basically this function reduces a list of instruments
+#' to a single wide format tibble in order to create a more
+#' easy to work with format and fascilitate saving as csv
+#' etc. It applies function f to each instrument and use that as a column
+#' in the final tibble. The default function applied is the close price
+#' extraction.
+#'
+#' @param x the list of instruments, which currently all
+#' must be of class xts, to reduce
+#' @param f the function to be applied to each instrument which must create one
+#' single value for each observation in the instrument
+#'
+#' @importFrom tibble as_tibble rownames_to_column
+#' @importFrom dplyr mutate full_join %>% arrange
+#' @importFrom quantmod Cl
+#' @importFrom purrr set_names
+#'
+#' @return a long format tibble
+#' @export
+#'
+#' @examples
+#' a<-1
+instrumentListTransToDataFrame <- function(x, f=quantmod::Cl) {
+  # Must be a list of stock where each stock is an xts
+  stopifnot(is.list(x))
+  stopifnot(all(sapply(x, function(y) class(y)[1]) == 'xts'))
+
+  extractSingle <- function(x, i, f) {
+    f(x[[i]]) %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column('date') %>%
+      tibble::as_data_frame() %>%
+      dplyr::mutate(date=as.Date(date)) %>%
+      purrr::set_names(c('date', names(x)[i]))
+  }
+  retdf <- extractSingle(x, 1, f)
+  for(i in 2:length(x))
+    retdf <- dplyr::full_join(retdf, extractSingle(x, i, f))
+  retdf %>% dplyr::arrange(date)
+}
+
 #' Filter instruments from the list which are unwanted
 #'
 #' Unwanted instruments are judged by the ratio of NA's compared to total amount

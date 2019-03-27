@@ -35,3 +35,9 @@ normalize <- function(x) (x-base::mean(x, na.rm=TRUE))/stats::sd(x, na.rm = TRUE
 clnormdf <- data.frame(cldf[,1], sapply(cldf[,-1], normalize)) %>% as_tibble()
 cormat <- cor(cldf[,-1], use = 'comp')
 tail(cldf[,3:120], 200) %>% prcomp(center=T, scale. = T) %>% summary
+
+cldf2 <- priceListToDf(mylist, quantmod::Vo)
+normalize <- function(x) (x-base::mean(x, na.rm=TRUE))/stats::sd(x, na.rm = TRUE)
+clnormdf <- data.frame(cldf[,1], sapply(cldf[,-1], normalize)) %>% as_tibble()
+cormat <- cor(cldf[,-1], use = 'comp')
+tail(cldf[,3:120], 200) %>% prcomp(center=T, scale. = T) %>% summary

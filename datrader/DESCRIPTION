@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 6.1.1
 Encoding: UTF-8
-Imports: readr, ggplot2, tibble, tidyr, utils
+Imports: readr, ggplot2, tibble, tidyr, utils, purrr
 Depends: xts, zoo, quantmod, dplyr, datools
 Suggests: covr,
     testthat
