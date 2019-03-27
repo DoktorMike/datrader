@@ -16,7 +16,12 @@
 #' @export
 #'
 #' @examples
-#' a <- 1
+#' library(datrader)
+#' library(quantmod)
+#' library(zoo)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' lapply(mylist, head)
 instrumentListToDataFrame<-function(x){
   # Must be a list of stock where each stock is an xts
   stopifnot(is.list(x))
@@ -28,6 +33,49 @@ instrumentListToDataFrame<-function(x){
       tidyr::gather("measure", "value", -c("date", "ticker"))
   }
   Reduce(function(a, b) dplyr::full_join(a, b), lapply(names(x), xtsToLong))
+}
+
+#' Reduce a list of instruments to a single tidyquant tibble
+#'
+#' Basically this function reduces a list of instruments
+#' to a single long format tibble in order to create a more
+#' easy to work with format and fascilitate saving as csv
+#' etc.
+#'
+#' @param x the list of instruments, which currently all
+#' must be of class xts, to reduce
+#'
+#' @importFrom tibble as_tibble rownames_to_column
+#' @importFrom dplyr mutate full_join %>%
+#' @importFrom tidyquant theme_tq geom_candlestick
+#'
+#' @return a long format tidyquant tibble
+#' @export
+#'
+#' @examples
+#' library(datrader)
+#' library(quantmod)
+#' library(zoo)
+#' library(tidyquant)
+#' mypath <- system.file('extdata', package = 'datrader')
+#' mylist <- loadExistingInstruments(mypath)
+#' tqdf <- instrumentListToTidyquant(mylist)
+#' mutate(tqdf, date=as.Date(date)) %>% filter(date >= "2018-01-01") %>%
+#' ggplot(aes(x = date, y = close, group = symbol)) +
+#' geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
+#' theme_tq() + facet_grid(symbol~., scale="free_y")
+instrumentListToTidyquant<-function(x){
+  # Must be a list of stock where each stock is an xts
+  stopifnot(is.list(x))
+  stopifnot(all(sapply(x, function(y) class(y)[1]) == 'xts'))
+
+  xtsToLong <- function(instName) {
+    as.data.frame(x[[instName]]) %>% tibble::rownames_to_column("date") %>%
+      tibble::as_tibble() %>% dplyr::mutate(symbol=instName)
+  }
+  Reduce(function(a, b) dplyr::full_join(a, b), lapply(names(x), xtsToLong)) %>%
+    dplyr::select("symbol", "date", "open", "high", "low", "close", "volume",
+                    "adjusted")
 }
 
 #' Reduce a list of instruments to a single tibble of f
