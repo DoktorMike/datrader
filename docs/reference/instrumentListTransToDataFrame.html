@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Reduce a list of instruments to a single tibble — instrumentListToDataFrame • datrader</title>
+<title>Reduce a list of instruments to a single tibble of f — instrumentListTransToDataFrame • datrader</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,12 +30,14 @@
 
 
 
-<meta property="og:title" content="Reduce a list of instruments to a single tibble — instrumentListToDataFrame" />
+<meta property="og:title" content="Reduce a list of instruments to a single tibble of f — instrumentListTransToDataFrame" />
 
 <meta property="og:description" content="Basically this function reduces a list of instruments
-to a single long format tibble in order to create a more
+to a single wide format tibble in order to create a more
 easy to work with format and fascilitate saving as csv
-etc." />
+etc. It applies function f to each instrument and use that as a column
+in the final tibble. The default function applied is the close price
+extraction." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -97,21 +99,23 @@ etc." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Reduce a list of instruments to a single tibble</h1>
+    <h1>Reduce a list of instruments to a single tibble of f</h1>
     
-    <div class="hidden name"><code>instrumentListToDataFrame.Rd</code></div>
+    <div class="hidden name"><code>instrumentListTransToDataFrame.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
     <p>Basically this function reduces a list of instruments
-to a single long format tibble in order to create a more
+to a single wide format tibble in order to create a more
 easy to work with format and fascilitate saving as csv
-etc.</p>
+etc. It applies function f to each instrument and use that as a column
+in the final tibble. The default function applied is the close price
+extraction.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>instrumentListToDataFrame</span>(<span class='no'>x</span>)</pre>
+    <pre class="usage"><span class='fu'>instrumentListTransToDataFrame</span>(<span class='no'>x</span>, <span class='kw'>f</span> <span class='kw'>=</span> <span class='kw pkg'>quantmod</span><span class='kw ns'>::</span><span class='no'><a href='https://www.rdocumentation.org/packages/quantmod/topics/OHLC.Transformations'>Cl</a></span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -121,6 +125,11 @@ etc.</p>
       <td><p>the list of instruments, which currently all
 must be of class xts, to reduce</p></td>
     </tr>
+    <tr>
+      <th>f</th>
+      <td><p>the function to be applied to each instrument which must create one
+single value for each observation in the instrument</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -129,38 +138,7 @@ must be of class xts, to reduce</p></td>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>datrader</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>quantmod</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>zoo</span>)
-<span class='no'>mypath</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/system.file'>system.file</a></span>(<span class='st'>'extdata'</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>'datrader'</span>)
-<span class='no'>mylist</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='loadExistingInstruments.html'>loadExistingInstruments</a></span>(<span class='no'>mypath</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/lapply'>lapply</a></span>(<span class='no'>mylist</span>, <span class='no'>head</span>)</div><div class='output co'>#&gt; $FB
-#&gt;             open  high   low close    volume adjusted
-#&gt; 2012-05-18 42.05 45.00 38.00 38.23 573576400    38.23
-#&gt; 2012-05-21 36.53 36.66 33.00 34.03 168192700    34.03
-#&gt; 2012-05-22 32.61 33.59 30.94 31.00 101786600    31.00
-#&gt; 2012-05-23 31.37 32.50 31.36 32.00  73600000    32.00
-#&gt; 2012-05-24 32.95 33.21 31.77 33.03  50237200    33.03
-#&gt; 2012-05-25 32.90 32.95 31.11 31.91  37149800    31.91
-#&gt; 
-#&gt; $MSFT
-#&gt;                open     high      low    close    volume adjusted
-#&gt; 1990-01-02 0.605903 0.616319 0.598090 0.616319  53033600 0.449200
-#&gt; 1990-01-03 0.621528 0.626736 0.614583 0.619792 113772800 0.451731
-#&gt; 1990-01-04 0.619792 0.638889 0.616319 0.638021 125740800 0.465017
-#&gt; 1990-01-05 0.635417 0.638889 0.621528 0.622396  69564800 0.453629
-#&gt; 1990-01-08 0.621528 0.631944 0.614583 0.631944  58982400 0.460588
-#&gt; 1990-01-09 0.631944 0.638889 0.626736 0.630208  70300800 0.459323
-#&gt; 
-#&gt; $NFLX
-#&gt;                open     high      low    close    volume adjusted
-#&gt; 2002-05-23 1.156429 1.242857 1.145714 1.196429 104790000 1.196429
-#&gt; 2002-05-24 1.214286 1.225000 1.197143 1.210000  11104800 1.210000
-#&gt; 2002-05-28 1.213571 1.232143 1.157143 1.157143   6609400 1.157143
-#&gt; 2002-05-29 1.164286 1.164286 1.085714 1.103571   6757800 1.103571
-#&gt; 2002-05-30 1.107857 1.107857 1.071429 1.071429  10154200 1.071429
-#&gt; 2002-05-31 1.078571 1.078571 1.071429 1.076429   8464400 1.076429
-#&gt; </div></pre>
+    <pre class="examples"><div class='input'><span class='no'>a</span><span class='kw'>&lt;-</span><span class='fl'>1</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
